@@ -61,6 +61,9 @@ namespace SlskTransferStatsUI
             else
             {
                 textBox4.Text = "Please initialize your settings";
+                textBox1.Text = "Please initialize your settings";
+                textBox7.Text = "Please initialize your settings";
+
             }
 
                     
@@ -275,7 +278,9 @@ namespace SlskTransferStatsUI
             }
             else
             {
+                textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
+                textBox7.Text = "Please initialize your settings";
             }
 
         }
@@ -522,6 +527,26 @@ namespace SlskTransferStatsUI
                 }
             }
 
+            if (File.Exists("settings.ini"))
+            {
+
+                if (File.Exists("parsingData.txt"))
+                {
+                    File.Delete("parsingData.txt");
+                }
+                Program.FileRead wr = new Program.FileRead();
+                wr.ParseData();
+                loadTree();
+                checkBox1.Checked = false;
+            }
+            else
+            {
+                textBox4.Text = "Please initialize your settings";
+                textBox1.Text = "Please initialize your settings";
+                textBox7.Text = "Please initialize your settings";
+            }
+
+
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -699,7 +724,9 @@ namespace SlskTransferStatsUI
                         }
                         else
                         {
+                            textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
+                            textBox7.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -734,7 +761,9 @@ namespace SlskTransferStatsUI
                         }
                         else
                         {
+                            textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
+                            textBox7.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -772,7 +801,9 @@ namespace SlskTransferStatsUI
                         }
                         else
                         {
+                            textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
+                            textBox7.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -859,7 +890,9 @@ namespace SlskTransferStatsUI
             }
             else
             {
+                textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
+                textBox7.Text = "Please initialize your settings";
             }
         }
     }
