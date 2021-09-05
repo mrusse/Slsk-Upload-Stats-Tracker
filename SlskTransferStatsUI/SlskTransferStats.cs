@@ -25,6 +25,7 @@ namespace SlskTransferStatsUI
             if (File.Exists("settings.ini"))
             {
                 //Read settings
+                label16.Text = "";
                 FileStream fs = new FileStream("settings.ini", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs);
 
@@ -59,7 +60,7 @@ namespace SlskTransferStatsUI
             {
                 textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
-                textBox7.Text = "Please initialize your settings";
+                label16.Text = "Please initialize your settings";
 
             }
 
@@ -270,6 +271,7 @@ namespace SlskTransferStatsUI
             richTextBox3.Text = "";
             if (File.Exists("settings.ini"))
             {
+                label16.Text = "";
                 richTextBox3.Rtf = wr.ParseData().Rtf;
                 loadTree();
             }
@@ -277,7 +279,7 @@ namespace SlskTransferStatsUI
             {
                 textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
-                textBox7.Text = "Please initialize your settings";
+                label16.Text = "Please initialize your settings";
             }
 
         }
@@ -526,7 +528,7 @@ namespace SlskTransferStatsUI
 
             if (File.Exists("settings.ini"))
             {
-
+                label16.Text = "";
                 if (File.Exists("parsingData.txt"))
                 {
                     File.Delete("parsingData.txt");
@@ -540,7 +542,7 @@ namespace SlskTransferStatsUI
             {
                 textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
-                textBox7.Text = "Please initialize your settings";
+                label16.Text = "Please initialize your settings";
             }
 
 
@@ -709,7 +711,7 @@ namespace SlskTransferStatsUI
 
                         if (File.Exists("settings.ini"))
                         {
-
+                            label16.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
@@ -723,7 +725,7 @@ namespace SlskTransferStatsUI
                         {
                             textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
-                            textBox7.Text = "Please initialize your settings";
+                            label16.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -748,7 +750,7 @@ namespace SlskTransferStatsUI
                         wr = new Program.FileRead();
                         if (File.Exists("settings.ini"))
                         {
-
+                            label16.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
@@ -760,7 +762,7 @@ namespace SlskTransferStatsUI
                         {
                             textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
-                            textBox7.Text = "Please initialize your settings";
+                            label16.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -788,7 +790,7 @@ namespace SlskTransferStatsUI
                         wr = new Program.FileRead();
                         if (File.Exists("settings.ini"))
                         {
-
+                            label16.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
@@ -800,7 +802,7 @@ namespace SlskTransferStatsUI
                         {
                             textBox4.Text = "Please initialize your settings";
                             textBox1.Text = "Please initialize your settings";
-                            textBox7.Text = "Please initialize your settings";
+                            label16.Text = "Please initialize your settings";
                         }
 
                         break;
@@ -875,7 +877,7 @@ namespace SlskTransferStatsUI
         {
             if (File.Exists("settings.ini"))
             {
-
+                label16.Text = "";
                 if (File.Exists("parsingData.txt"))
                 {
                     File.Delete("parsingData.txt");
@@ -889,7 +891,7 @@ namespace SlskTransferStatsUI
             {
                 textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
-                textBox7.Text = "Please initialize your settings";
+                label16.Text = "Please initialize your settings";
             }
         }
     }

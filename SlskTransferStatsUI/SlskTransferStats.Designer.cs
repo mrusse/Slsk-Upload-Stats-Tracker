@@ -47,7 +47,6 @@ namespace SlskTransferStatsUI
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
             this.UserStats = new System.Windows.Forms.TabPage();
             this.label15 = new System.Windows.Forms.Label();
             this.button7 = new System.Windows.Forms.Button();
@@ -78,6 +77,8 @@ namespace SlskTransferStatsUI
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBox7 = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -305,6 +306,7 @@ namespace SlskTransferStatsUI
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label16);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.textBox7);
             this.groupBox1.Location = new System.Drawing.Point(33, 28);
@@ -320,26 +322,11 @@ namespace SlskTransferStatsUI
             this.label8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(222, 54);
+            this.label8.Location = new System.Drawing.Point(226, 68);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(412, 55);
             this.label8.TabIndex = 4;
             this.label8.Text = "Total upload size: ";
-            // 
-            // textBox7
-            // 
-            this.textBox7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
-            this.textBox7.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox7.ForeColor = System.Drawing.Color.White;
-            this.textBox7.Location = new System.Drawing.Point(17, 82);
-            this.textBox7.MaxLength = 0;
-            this.textBox7.Multiline = true;
-            this.textBox7.Name = "textBox7";
-            this.textBox7.ReadOnly = true;
-            this.textBox7.Size = new System.Drawing.Size(838, 204);
-            this.textBox7.TabIndex = 10;
-            this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // UserStats
             // 
@@ -742,6 +729,31 @@ namespace SlskTransferStatsUI
             this.button8.UseVisualStyleBackColor = false;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.Color.Red;
+            this.label16.Location = new System.Drawing.Point(227, 179);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(0, 31);
+            this.label16.TabIndex = 11;
+            // 
+            // textBox7
+            // 
+            this.textBox7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
+            this.textBox7.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox7.ForeColor = System.Drawing.Color.White;
+            this.textBox7.Location = new System.Drawing.Point(8, 96);
+            this.textBox7.MaxLength = 0;
+            this.textBox7.Multiline = true;
+            this.textBox7.Name = "textBox7";
+            this.textBox7.ReadOnly = true;
+            this.textBox7.Size = new System.Drawing.Size(838, 204);
+            this.textBox7.TabIndex = 10;
+            this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // SlskTransferStats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -807,7 +819,6 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
@@ -825,6 +836,8 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox richTextBox3;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox textBox7;
     }
 }
 
