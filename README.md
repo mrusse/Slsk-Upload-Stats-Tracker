@@ -1,9 +1,10 @@
 # Slsk-Upload-Stats-Tracker
-A utility to track, save and view stats on your soulseek uploads.
+A utility to track, save, and view stats on your soulseek uploads.
 # Main stats menu
 NOTE: all usernames and data in these screenshots are either randomly generated or censored for privacy
 
-From the main menu you can see a varity of general stats such as your upload totals and top downloaders.
+From the main menu you can see a variety of general stats such as your upload totals and top downloaders.
+
 ![main menu](https://i.imgur.com/S11LrMI.png)
 
 You can also view your top downloaded folders.
@@ -12,23 +13,23 @@ You can also view your top downloaded folders.
 
 # User stats
 
-From the user stats page you can view all the users who have downloaded from you. 
+From the user stats page you can view all the users who have downloaded from you.
 For each user the program logs all their downloads and sorts them by folder.
-There are a few different sorting options and a search bar. The search works on anything in the 
+There are a few different sorting options and a search bar. The search works on anything in the
 whole database (username, folder, filename etc). You can remove any item from the database by selecting it and clicking
 the "Remove Selected" button.
 
 Anything you select in the database (users, folders, or files) will show stats and information on the selected
 item in the top right. Tracked stats are things like: number of times a folder or file has been downloaded, last user to download a folder,
-added up total size in kilobytes of a users downloads, and much more.
+added up total size in kilobytes of a user's downloads, and much more.
 
 ![user stats page](https://i.imgur.com/AyAXMbJ.png)
 
 # How to add data and start using the program
 
-The first thing you need to do when launching the program for the first time is initilize your settings.
+The first thing you need to do when launching the program for the first time is initialize your settings.
 You need to choose a place to save the database that will be built as well as add the location
-of all the folders you are sharing in soulseek. Heres an example of my settings page.
+of all the folders you are sharing in soulseek. Here's an example of my settings page.
 
 ![settings page](https://i.imgur.com/GTWwqzn.png)
 
@@ -38,9 +39,9 @@ under "Options" > "UI"
 ![slsk settings](https://i.imgur.com/jevgodt.png)
 
 Then you can naviagte to "Diagnostics" > "Logs" > "Transfer Queue". This is where you can copy the data to paste into
-the stats tracker. NOTE: You will need to copy this data before closing soulseek as the SoulseekQT client 
+the stats tracker. NOTE: You will need to copy this data before closing soulseek as the SoulseekQT client
 does not keep the data after closing. You can also copy the data anytime you have a new upload. The stats tracking program
-will only gather new data. 
+will only gather new data.
 
 Simply select all with "Ctrl-A" and copy with "Ctrl-C"
 
@@ -54,4 +55,5 @@ Once the data has been pasted you can click submit and it will find any new uplo
 
 ![slsk settings](https://i.imgur.com/L8VLpGw.png)
 
-After adding new data it will be stored permenantly in the stats tracking program. You don't need to worry about loseing your upload data.
+After adding new data it will be stored permanently in the stats tracking program. You don't need to worry about losing your upload data.
+
