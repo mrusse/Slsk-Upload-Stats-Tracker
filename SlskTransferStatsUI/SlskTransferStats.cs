@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Text.RegularExpressions;
 
 namespace SlskTransferStatsUI
 {
@@ -465,13 +462,13 @@ namespace SlskTransferStatsUI
         //"Database save location: " button in settings (opens a folder pick dialog)
         private void button5_Click(object sender, EventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = "C:\\Users";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
             {
-                Globals.UserDataFile = dialog.FileName;
-                label4.Text = ("Database save location: " + dialog.FileName);
+                Globals.UserDataFile = dialog.SelectedPath;
+                label4.Text = ("Database save location: " + dialog.SelectedPath);
 
             }
         }
@@ -480,13 +477,13 @@ namespace SlskTransferStatsUI
         private void button4_Click(object sender, EventArgs e)
         {
 
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = "C:\\Users";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
             {
-                Globals.SlskFolders.Add(dialog.FileName);
-                textBox5.AppendText(dialog.FileName + "\r\n");
+                Globals.SlskFolders.Add(dialog.SelectedPath);
+                textBox5.AppendText(dialog.SelectedPath + "\r\n");
             }
 
         }
