@@ -3,6 +3,7 @@ A utility to track, save and view stats on your soulseek uploads.
 # Main stats menu
 NOTE: all usernames and data in these screenshots are either randomly generated or censored for privacy
 
+From the main menu you can see a varity of general stats such as your upload totals and top downloaders.
 ![main menu](https://i.imgur.com/S11LrMI.png)
 
 You can also view your top downloaded folders.
