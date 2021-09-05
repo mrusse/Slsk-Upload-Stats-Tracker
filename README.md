@@ -25,6 +25,32 @@ added up total size in kilobytes of a users downloads, and much more.
 
 # How to add data and start using the program
 
-The first thing you need to do when launching the program is initilize your settings.
+The first thing you need to do when launching the program for the first time is initilize your settings.
+You need to choose a place to save the database that will be built as well as add the location
+of all the folders you are sharing in soulseek. Heres an example of my settings page.
 
-![user stats page](https://i.imgur.com/GTWwqzn.png)
+![settings page](https://i.imgur.com/GTWwqzn.png)
+
+Now for adding some data. You first need to enable "Show diagnostics" in the SoulseekQT settings
+under "Options" > "UI"
+
+![slsk settings](https://i.imgur.com/jevgodt.png)
+
+Then you can naviagte to "Diagnostics" > "Logs" > "Transfer Queue". This is where you can copy the data to paste into
+the stats tracker. NOTE: You will need to copy this data before closing soulseek as the SoulseekQT client 
+does not keep the data after closing. You can also copy the data anytime you have a new upload. The stats tracking program
+will only gather new data. 
+
+Simply select all with "Ctrl-A" and copy with "Ctrl-C"
+
+![slsk settings](https://i.imgur.com/xmqBJsW.png)
+
+You can then paste this data into "Input" text box on the "Data Input" tab of the stats tracking program.
+
+![slsk settings](https://i.imgur.com/i0PjbCz.png)
+
+Once the data has been pasted you can click submit and it will find any new upload data that is not already in your database.
+
+![slsk settings](https://i.imgur.com/L8VLpGw.png)
+
+After adding new data it will be stored permenantly in the stats tracking program. You don't need to worry about loseing your upload data.
