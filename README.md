@@ -29,7 +29,9 @@ added up total size in kilobytes of a user's downloads, and much more.
 
 The first thing you need to do when launching the program for the first time is initialize your settings.
 You need to choose a place to save the database that will be built as well as add the location
-of all the folders you are sharing in soulseek. Here's an example of my settings page.
+of all the folders you are sharing in soulseek. Once you have selected your desired save location
+and added all the same folders that you are sharing in soulseek you can clik the "Save settings" button.
+Here's an example of my settings page.
 
 ![settings page](https://i.imgur.com/GTWwqzn.png)
 
@@ -47,11 +49,11 @@ Simply select all with "Ctrl-A" and copy with "Ctrl-C"
 
 ![slsk settings](https://i.imgur.com/xmqBJsW.png)
 
-You can then paste this data into "Input" text box on the "Data Input" tab of the stats tracking program.
+You can then paste this data into the "Input" text box on the "Data Input" tab of the stats tracking program.
 
 ![slsk settings](https://i.imgur.com/i0PjbCz.png)
 
-Once the data has been pasted you can click submit and it will find any new upload data that is not already in your database.
+Once the data has been pasted you can click the "Submit to database" button and it will find any new upload data that is not already in your database.
 
 ![slsk settings](https://i.imgur.com/L8VLpGw.png)
 
