@@ -279,7 +279,6 @@ namespace SlskTransferStatsUI
             this.richTextBox4.Size = new System.Drawing.Size(850, 515);
             this.richTextBox4.TabIndex = 11;
             this.richTextBox4.Text = "";
-            this.richTextBox4.WordWrap = false;
             // 
             // groupBox1
             // 

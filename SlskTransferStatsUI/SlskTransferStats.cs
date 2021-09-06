@@ -238,8 +238,8 @@ namespace SlskTransferStatsUI
 
                 }
 
-                //Files uploaded stat
-                richTextBox4.AppendText("Number of users: " + users.Count + "\r\n\r\nFiles uploaded: " + downloadCount + "\r\n\r\n" + lastuser + "\r\n\r\n" + lastDate);
+                //General stats textbox
+                richTextBox4.AppendText("Number of users: " + users.Count + "\r\n\r\n\r\nFiles uploaded: " + downloadCount + "\r\n\r\n\r\n" + lastuser + "\r\n\r\n\r\n" + lastDate);
 
                 //total upload stat
                 decimal totalDlDecimal = Convert.ToDecimal(totalDownloadSize);
