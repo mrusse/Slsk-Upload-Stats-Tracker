@@ -14,11 +14,12 @@ namespace SlskTransferStatsUI
         public SlskTransferStats()
         {
             InitializeComponent();
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            
             this.Icon = new Icon("icon.ico");
 
             //Only load the tree if settings exist TODO: tell the user to set their settings
@@ -153,11 +154,10 @@ namespace SlskTransferStatsUI
                 input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
 
-                //ScrambleNames();
-
                 //Top 10 users stat
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
                 richTextBox2.Text = "";
+                richTextBox4.Text = "";
                 textBox8.Text = "";
 
                 for (int i = 0; i < 28; i++)
@@ -171,21 +171,18 @@ namespace SlskTransferStatsUI
 
                 //last user to download stat
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-                label12.Text = "Last user to download: " + users[users.Count - 1].Username;
+                string lastuser = "Last user to download: " + users[users.Count - 1].Username;
 
                 //last user to download stat
-                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-
                 //this is fucked
                 string lastDate = users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date
                                                         .Substring(1, users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date.Length - 2);
 
                 string[] dateSplit = lastDate.Split();
                 lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-                label13.Text = "Last upload date: " + lastDate;
+                lastDate = "Last upload date: " + lastDate;
 
                 //Number of users stat
-                label10.Text = "Number of users: " + users.Count;
 
                 if (checkBox2.Checked == true)
                 {
@@ -242,7 +239,7 @@ namespace SlskTransferStatsUI
                 }
 
                 //Files uploaded stat
-                label11.Text = "Files uploaded:  " + downloadCount;
+                richTextBox4.AppendText("Number of users: " + users.Count + "\r\n\r\nFiles uploaded: " + downloadCount + "\r\n\r\n" + lastuser + "\r\n\r\n" + lastDate);
 
                 //total upload stat
                 decimal totalDlDecimal = Convert.ToDecimal(totalDownloadSize);
