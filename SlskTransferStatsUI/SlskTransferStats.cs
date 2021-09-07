@@ -168,7 +168,7 @@ namespace SlskTransferStatsUI
                 }
                 else
                 {
-                    max = folders.Count;
+                    max = users.Count;
                 }
 
                 for (int i = 0; i < max; i++)
