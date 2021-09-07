@@ -1044,7 +1044,7 @@ namespace SlskTransferStatsUI
                                 path = queued.Substring(queued.IndexOf("\\"));
   
                                 //math path with no drive to path from settings with drive (then extract the drive from this string)
-                                for(int i = 0; i < Globals.SlskFolders.Count - 1; i++)
+                                for(int i = 0; i < Globals.SlskFolders.Count; i++)
                                 {
                                     string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].IndexOf(":") + 1);
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
@@ -1095,7 +1095,7 @@ namespace SlskTransferStatsUI
                                 path = queued.Substring(queued.IndexOf("\\"));
 
                                 //math path with no drive to path from settings with drive (then extract the drive from this string)
-                                for (int i = 0; i < Globals.SlskFolders.Count - 1; i++)
+                                for (int i = 0; i < Globals.SlskFolders.Count; i++)
                                 {
                                     string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].IndexOf(":") + 1);
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
