@@ -44,7 +44,6 @@ namespace SlskTransferStatsUI
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.UserStats = new System.Windows.Forms.TabPage();
             this.button8 = new System.Windows.Forms.Button();
@@ -285,7 +284,6 @@ namespace SlskTransferStatsUI
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.label16);
             this.groupBox1.Controls.Add(this.textBox7);
             this.groupBox1.Location = new System.Drawing.Point(33, 28);
             this.groupBox1.Name = "groupBox1";
@@ -309,18 +307,6 @@ namespace SlskTransferStatsUI
             this.textBox2.TabIndex = 12;
             this.textBox2.Text = "Total Upload Size:";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label16
-            // 
-            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.ForeColor = System.Drawing.Color.Red;
-            this.label16.Location = new System.Drawing.Point(227, 179);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(0, 31);
-            this.label16.TabIndex = 11;
             // 
             // textBox7
             // 
@@ -851,7 +837,6 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox richTextBox3;
         private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.RichTextBox richTextBox4;
