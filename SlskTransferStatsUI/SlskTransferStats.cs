@@ -531,6 +531,7 @@ namespace SlskTransferStatsUI
                     System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i] + Environment.NewLine);
                     textBox1.Text = "";
                     textBox4.Text = "";
+                    textBox7.Text = "";
                 }
             }     
 
