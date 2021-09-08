@@ -96,8 +96,9 @@ namespace SlskTransferStatsUI
                 textBox9.Text = "";
 
                 List<string> inFolderList = new List<string>();
+                
                 inFolderList.Add(folders[0].Path);
-
+                
                 int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
                 string newPath = folders[0].Path.Substring(0, index + 1);
                 richTextBox1.AppendText(newPath + "...\\" +folders[0].Foldername + ":\r\n");
@@ -432,7 +433,6 @@ namespace SlskTransferStatsUI
             //if the seleceted not isnt a person or folder it is a file
             if (userFolder == false)
             {
-
                 TreeNode node = treeView1.SelectedNode;
                 while (node.Parent != null)
                 {
@@ -461,6 +461,7 @@ namespace SlskTransferStatsUI
                                             " kb\r\n\r\nNumber of times downloaded: " + downloadCount +
                                             "\r\n\r\nDate downloaded: " + lastDate +
                                             "\r\n\r\nFile path: " + users[index].DownloadList[i].Path);
+                        break;
                     }
 
                 }
@@ -1046,10 +1047,11 @@ namespace SlskTransferStatsUI
                                 //math path with no drive to path from settings with drive (then extract the drive from this string)
                                 for(int i = 0; i < Globals.SlskFolders.Count; i++)
                                 {
-                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].IndexOf(":") + 1);
+                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
-                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].IndexOf(":") + 1);
+                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                        Console.WriteLine(drive);
                                         break;
                                      }
                                 }
@@ -1097,10 +1099,11 @@ namespace SlskTransferStatsUI
                                 //math path with no drive to path from settings with drive (then extract the drive from this string)
                                 for (int i = 0; i < Globals.SlskFolders.Count; i++)
                                 {
-                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].IndexOf(":") + 1);
+                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
-                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].IndexOf(":") + 1);
+                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                        Console.WriteLine(drive);
                                         break;
                                     }
                                 }
