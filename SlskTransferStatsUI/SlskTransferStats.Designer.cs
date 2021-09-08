@@ -69,6 +69,7 @@ namespace SlskTransferStatsUI
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.button9 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
@@ -672,6 +673,7 @@ namespace SlskTransferStatsUI
             // Settings
             // 
             this.Settings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
+            this.Settings.Controls.Add(this.button9);
             this.Settings.Controls.Add(this.button6);
             this.Settings.Controls.Add(this.label4);
             this.Settings.Controls.Add(this.button5);
@@ -684,6 +686,19 @@ namespace SlskTransferStatsUI
             this.Settings.Size = new System.Drawing.Size(1558, 968);
             this.Settings.TabIndex = 4;
             this.Settings.Text = "Settings";
+            // 
+            // button9
+            // 
+            this.button9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.button9.ForeColor = System.Drawing.Color.White;
+            this.button9.Location = new System.Drawing.Point(283, 903);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(140, 34);
+            this.button9.TabIndex = 13;
+            this.button9.Text = "Remove last";
+            this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button6
             // 
@@ -754,7 +769,7 @@ namespace SlskTransferStatsUI
             this.button4.ForeColor = System.Drawing.Color.White;
             this.button4.Location = new System.Drawing.Point(21, 903);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(402, 34);
+            this.button4.Size = new System.Drawing.Size(247, 34);
             this.button4.TabIndex = 6;
             this.button4.Text = "Choose folder to add";
             this.button4.UseVisualStyleBackColor = false;
@@ -840,6 +855,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.RichTextBox richTextBox4;
+        private System.Windows.Forms.Button button9;
     }
 }
 

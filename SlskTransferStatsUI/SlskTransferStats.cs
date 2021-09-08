@@ -34,7 +34,6 @@ namespace SlskTransferStatsUI
 
                 Globals.UserDataFile = str;
 
-
                 while (str != null)
                 {
 
@@ -43,9 +42,11 @@ namespace SlskTransferStatsUI
 
                 }
 
+                Globals.SlskFolders.RemoveAt(Globals.SlskFolders.Count - 1);
+
                 label4.Text = ("Database save location: " + Globals.UserDataFile);
 
-                for (int i = 0; i < Globals.SlskFolders.Count - 1; i++)
+                for (int i = 0; i < Globals.SlskFolders.Count; i++)
                 {
                     textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
                 }
@@ -375,9 +376,7 @@ namespace SlskTransferStatsUI
                 StartNode = StartNode.NextNode;
                 
             }
-
-            
-
+           
         }
 
         //This controls what the info box shows (User stats, Folder stats etc)
@@ -523,13 +522,23 @@ namespace SlskTransferStatsUI
         //Save settings button (writes info to file)
         private void button6_Click(object sender, EventArgs e)
         {
-
+            if (File.Exists("settings.ini"))
+            {
+                File.Delete("settings.ini");
+            }
             System.IO.File.WriteAllText(@"settings.ini", Globals.UserDataFile + Environment.NewLine);
             if (Globals.SlskFolders.Count != 0)
             {
                 for (int i = 0; i < Globals.SlskFolders.Count; i++)
                 {
-                    System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i] + Environment.NewLine);
+                    if (i != Globals.SlskFolders.Count - 1)
+                    {
+                        System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i] + Environment.NewLine);
+                    }
+                    else
+                    {
+                        System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i]);
+                    }
                     textBox1.Text = "";
                     textBox4.Text = "";
                     textBox7.Text = "";
@@ -832,6 +841,7 @@ namespace SlskTransferStatsUI
 
         }
 
+        //Detect enter key for searching
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
 
@@ -850,6 +860,7 @@ namespace SlskTransferStatsUI
 
         }
 
+        //Function to scrable names in the tree. useful for taking screenshots
         public void ScrambleNames()
         {
             for (int i = 0; i < users.Count; i++)
@@ -883,6 +894,20 @@ namespace SlskTransferStatsUI
                 textBox1.Text = "Please initialize your settings";
                 textBox7.Text = "\r\nPlease initialize your settings";
             }
+        }
+
+        //remove last folder option in settings
+        private void button9_Click(object sender, EventArgs e)
+        {
+
+            textBox5.Text = "";
+            Globals.SlskFolders.RemoveAt(Globals.SlskFolders.Count - 1);
+
+            for(int i = 0; i < Globals.SlskFolders.Count; i++)
+            {
+                textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
+            }
+
         }
     }
 
