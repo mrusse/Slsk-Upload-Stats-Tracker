@@ -1244,12 +1244,7 @@ namespace SlskTransferStatsUI
 
                                 for (int k = 0; k < folders.Count; k++)
                                 {
-
-
-                                    //not used i think (lol)
-                                    DateTime date1 = DateTime.Parse(lastDate);
-                                    DateTime date2 = DateTime.Parse(folders[k].LastTimeDownloaded);
-
+                                  
                                     if (folders[k].Path == folder && (folders[k].LatestUser != users[i].Username))
                                     {                        
                                         folders[k] = new Folder(folder, foldername, folders[k].DownloadNum += 1, users[i].Username, lastDate);                                       
