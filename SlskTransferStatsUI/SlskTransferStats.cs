@@ -119,15 +119,16 @@ namespace SlskTransferStatsUI
 
                 for (int i = 1; i < max; i++)
                 {
+                    //Console.WriteLine(folders[i].Path);
                     inFolder = false;
                     for (int j = 0; j < inFolderList.Count; j ++)
                     {
-                        
+                        //Console.WriteLine("| " + j + " | " + inFolderList[j]);
                         if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
                         {
                             //Console.WriteLine(folders[i].Path + " " + inFolderList[j]);
                             inFolder = true;
-                            max++;
+                            i++;
                             break;
                         }
 
