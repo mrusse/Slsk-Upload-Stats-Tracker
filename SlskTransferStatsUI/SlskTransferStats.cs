@@ -119,15 +119,16 @@ namespace SlskTransferStatsUI
 
                 for (int i = 1; i < max; i++)
                 {
+                    //Console.WriteLine(folders[i].Path);
                     inFolder = false;
                     for (int j = 0; j < inFolderList.Count; j ++)
                     {
-                        
+                        //Console.WriteLine("| " + j + " | " + inFolderList[j]);
                         if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
                         {
                             //Console.WriteLine(folders[i].Path + " " + inFolderList[j]);
                             inFolder = true;
-                            max++;
+                            i++;
                             break;
                         }
 
@@ -899,13 +900,16 @@ namespace SlskTransferStatsUI
         //remove last folder option in settings
         private void button9_Click(object sender, EventArgs e)
         {
+            //If no folder was added, don't continue
+            if(Globals.SlskFolders.Count > 0){
+                textBox5.Text = "";
 
-            textBox5.Text = "";
-            Globals.SlskFolders.RemoveAt(Globals.SlskFolders.Count - 1);
+                Globals.SlskFolders.RemoveAt(Globals.SlskFolders.Count - 1);
 
-            for(int i = 0; i < Globals.SlskFolders.Count; i++)
-            {
-                textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
+                for (int i = 0; i < Globals.SlskFolders.Count; i++)
+                {
+                    textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
+                }
             }
 
         }
