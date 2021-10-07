@@ -120,13 +120,14 @@ namespace SlskTransferStatsUI
 
                 for (int i = 1; i < max; i++)
                 {
+                    //Console.WriteLine(folders[i].Path);
                     inFolder = false;
                     for (int j = 0; j < inFolderList.Count; j ++)
                     {
-
+                        //Console.WriteLine("| " + j + " | " + inFolderList[j]);
                         if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
                         {
-
+                            //Console.WriteLine(folders[i].Path + " " + inFolderList[j]);
                             inFolder = true;
                             i++;
                             break;
@@ -1110,6 +1111,7 @@ namespace SlskTransferStatsUI
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
                                         drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                        Console.WriteLine(drive);
                                         break;
                                      }
                                 }
@@ -1161,6 +1163,7 @@ namespace SlskTransferStatsUI
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
                                         drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                        Console.WriteLine(drive);
                                         break;
                                     }
                                 }
@@ -1176,6 +1179,7 @@ namespace SlskTransferStatsUI
                                 else
                                 {
                                     size = 0;
+                                    //Console.WriteLine(path);
                                 }
 
 
