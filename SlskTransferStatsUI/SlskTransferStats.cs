@@ -1027,9 +1027,11 @@ namespace SlskTransferStatsUI
             {
                 return ParsedDate;
             }
-            throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
-            
-            //return ParsedDate;
+            //throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
+
+            //Temp default since en-US format isnt getting caught by that first If
+            ParsedDate = DateTime.Parse(date);
+            return ParsedDate;
             
         }
         
