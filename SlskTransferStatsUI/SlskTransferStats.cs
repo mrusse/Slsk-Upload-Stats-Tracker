@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace SlskTransferStatsUI
 {
@@ -993,15 +994,43 @@ namespace SlskTransferStatsUI
         //Converts the LastDate to a time format which can be parsed
         public DateTime convertDate(string date)
         {
+            string[] formatsEnUs = { "ddd, dd MMM yyyy HH':'mm':'ss" };
+            string[] formatsEnGB = { "ddd, dd MMM yyyy HH':'mm':'ss" };
+            string[] formatsFrFr = { "ddd, dd MMM yyyy HH':'mm':'ss" };
+            string[] formatsDeDe = { "ddd, dd MMM yyyy HH':'mm':'ss" };
 
             string[] dateSplit;
 
             date = LastDate.Substring(1, this.LastDate.Length - 2);
             dateSplit = date.Split();
             date = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-            DateTime ParsedDate = DateTime.Parse(date);
+            
+            DateTime ParsedDate; // = DateTime.Parse(date);
 
-            return ParsedDate;
+            //Try to parse date for known cultural formats
+            
+            if (DateTime.TryParseExact(date, formatsEnUs, new CultureInfo("en-US"), DateTimeStyles.None, out ParsedDate))
+            {
+                return ParsedDate;
+            }
+
+            if (DateTime.TryParseExact(date, formatsEnGB, new CultureInfo("en-GB"), DateTimeStyles.None, out ParsedDate))
+            {
+                return ParsedDate;
+            }
+
+            if (DateTime.TryParseExact(date, formatsFrFr, new CultureInfo("fr-FR"), DateTimeStyles.None, out ParsedDate))
+            {
+                return ParsedDate;
+            }
+
+            if (DateTime.TryParseExact(date, formatsDeDe, new CultureInfo("de-De"), DateTimeStyles.None, out ParsedDate))
+            {
+                return ParsedDate;
+            }
+            throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
+            
+            //return ParsedDate;
             
         }
         
