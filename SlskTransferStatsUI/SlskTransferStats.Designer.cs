@@ -33,8 +33,8 @@ namespace SlskTransferStatsUI
             this.GeneralStats = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.richTextBox5 = new System.Windows.Forms.RichTextBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -133,8 +133,8 @@ namespace SlskTransferStatsUI
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.tabPage1.Controls.Add(this.richTextBox5);
             this.tabPage1.Controls.Add(this.richTextBox2);
-            this.tabPage1.Controls.Add(this.textBox8);
             this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
@@ -142,6 +142,24 @@ namespace SlskTransferStatsUI
             this.tabPage1.Size = new System.Drawing.Size(553, 900);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Users";
+            // 
+            // richTextBox5
+            // 
+            this.richTextBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.richTextBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold);
+            this.richTextBox5.ForeColor = System.Drawing.Color.White;
+            this.richTextBox5.Location = new System.Drawing.Point(389, 122);
+            this.richTextBox5.Name = "richTextBox5";
+            this.richTextBox5.ReadOnly = true;
+            this.richTextBox5.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
+            this.richTextBox5.Size = new System.Drawing.Size(134, 760);
+            this.richTextBox5.TabIndex = 11;
+            this.richTextBox5.Text = "";
+            this.richTextBox5.WordWrap = false;
             // 
             // richTextBox2
             // 
@@ -156,28 +174,10 @@ namespace SlskTransferStatsUI
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
             this.richTextBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
-            this.richTextBox2.Size = new System.Drawing.Size(379, 760);
+            this.richTextBox2.Size = new System.Drawing.Size(352, 760);
             this.richTextBox2.TabIndex = 10;
             this.richTextBox2.Text = "";
             this.richTextBox2.WordWrap = false;
-            // 
-            // textBox8
-            // 
-            this.textBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
-            this.textBox8.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox8.ForeColor = System.Drawing.Color.White;
-            this.textBox8.Location = new System.Drawing.Point(416, 122);
-            this.textBox8.MaxLength = 0;
-            this.textBox8.Multiline = true;
-            this.textBox8.Name = "textBox8";
-            this.textBox8.ReadOnly = true;
-            this.textBox8.Size = new System.Drawing.Size(107, 760);
-            this.textBox8.TabIndex = 9;
-            this.textBox8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label9
             // 
@@ -839,7 +839,6 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -856,6 +855,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.RichTextBox richTextBox5;
     }
 }
 

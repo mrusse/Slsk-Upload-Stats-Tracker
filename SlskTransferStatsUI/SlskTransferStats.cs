@@ -161,7 +161,7 @@ namespace SlskTransferStatsUI
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
                 richTextBox2.Text = "";
                 richTextBox4.Text = "";
-                textBox8.Text = "";
+                richTextBox5.Text = "";
 
                 int max;
 
@@ -179,9 +179,14 @@ namespace SlskTransferStatsUI
                     decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
                     userDownload = Decimal.Divide(userDownload, 1000000);
                     richTextBox2.AppendText(users[i].Username + ":\r\n");
-                    textBox8.AppendText((userDownload).ToString("#.###") + " GB\r\n");
+                    richTextBox5.AppendText((userDownload).ToString("#.###") + " GB\r\n");
 
                 }
+
+                //Right justify user download size list
+                richTextBox5.SelectAll();
+                richTextBox5.SelectionAlignment = HorizontalAlignment.Right;
+                richTextBox5.DeselectAll();
 
                 //last user to download stat
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
@@ -1079,7 +1084,7 @@ namespace SlskTransferStatsUI
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
                                         drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                        Console.WriteLine(drive);
+                                        //Console.WriteLine(drive);
                                         break;
                                      }
                                 }
