@@ -994,10 +994,10 @@ namespace SlskTransferStatsUI
         //Converts the LastDate to a time format which can be parsed
         public DateTime convertDate(string date)
         {
-            string[] formatsEnUs = { "ddd, dd MMM yyyy HH':'mm':'ss" };
-            string[] formatsEnGB = { "ddd, dd MMM yyyy HH':'mm':'ss" };
+            string[] formatsEnUs = { "ddd, dd MMM HH':'mm':'ss yyyy" };
+            //string[] formatsEnGB = { "ddd MMM dd yyyy HH':'mm':'ss" };
             string[] formatsFrFr = { "ddd, dd MMM yyyy HH':'mm':'ss" };
-            string[] formatsDeDe = { "ddd, dd MMM yyyy HH':'mm':'ss" };
+            //string[] formatsDeDe = { "ddd, dd MMM yyyy HH':'mm':'ss" };
 
             string[] dateSplit;
 
@@ -1014,20 +1014,21 @@ namespace SlskTransferStatsUI
                 return ParsedDate;
             }
 
-            if (DateTime.TryParseExact(date, formatsEnGB, new CultureInfo("en-GB"), DateTimeStyles.None, out ParsedDate))
-            {
-                return ParsedDate;
-            }
+            //if (DateTime.TryParseExact(date, formatsEnGB, new CultureInfo("en-GB"), DateTimeStyles.None, out ParsedDate))
+            //{
+            //    return ParsedDate;
+            //}
 
             if (DateTime.TryParseExact(date, formatsFrFr, new CultureInfo("fr-FR"), DateTimeStyles.None, out ParsedDate))
             {
                 return ParsedDate;
             }
 
-            if (DateTime.TryParseExact(date, formatsDeDe, new CultureInfo("de-De"), DateTimeStyles.None, out ParsedDate))
-            {
-                return ParsedDate;
-            }
+            //if (DateTime.TryParseExact(date, formatsDeDe, new CultureInfo("de-De"), DateTimeStyles.None, out ParsedDate))
+            //{
+            //    return ParsedDate;
+            //}
+
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
             
             //return ParsedDate;
