@@ -1003,7 +1003,6 @@ namespace SlskTransferStatsUI
             date = LastDate.Substring(1, this.LastDate.Length - 2);
             dateSplit = date.Split();
             date = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-            DateTime ParsedDate = DateTime.Parse(date);
 
             //Try to parse date for known cultural formats
 
