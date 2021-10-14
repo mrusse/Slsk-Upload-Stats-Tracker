@@ -999,14 +999,23 @@ namespace SlskTransferStatsUI
         public DateTime convertDate(string date)
         {
             string[] dateSplit;
+            DateTime ParsedDate;
 
             date = LastDate.Substring(1, this.LastDate.Length - 2);
             dateSplit = date.Split();
             date = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-            DateTime ParsedDate = DateTime.Parse(date);
 
-            return ParsedDate;
+            //Try to parse date for known cultural formats
 
+            if (DateTime.TryParse(date, out ParsedDate))
+            {
+                return ParsedDate;
+            }
+            
+            //Error if datestring not found
+            MessageBox.Show("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
+            System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
+            throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
         }
         
     }
