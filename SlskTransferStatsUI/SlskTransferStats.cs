@@ -1014,7 +1014,7 @@ namespace SlskTransferStatsUI
             
             //Error if datestring not found
             MessageBox.Show("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
-            //System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
+            System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
         }
         
