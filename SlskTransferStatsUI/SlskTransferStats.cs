@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
-using System.Globalization;
 
 namespace SlskTransferStatsUI
 {
@@ -162,7 +161,7 @@ namespace SlskTransferStatsUI
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
                 richTextBox2.Text = "";
                 richTextBox4.Text = "";
-                textBox8.Text = "";
+                richTextBox5.Text = "";
 
                 int max;
 
@@ -180,9 +179,14 @@ namespace SlskTransferStatsUI
                     decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
                     userDownload = Decimal.Divide(userDownload, 1000000);
                     richTextBox2.AppendText(users[i].Username + ":\r\n");
-                    textBox8.AppendText((userDownload).ToString("#.###") + " GB\r\n");
+                    richTextBox5.AppendText((userDownload).ToString("#.###") + " GB\r\n");
 
                 }
+
+                //Right justify user download size list
+                richTextBox5.SelectAll();
+                richTextBox5.SelectionAlignment = HorizontalAlignment.Right;
+                richTextBox5.DeselectAll();
 
                 //last user to download stat
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
@@ -994,14 +998,12 @@ namespace SlskTransferStatsUI
         //Converts the LastDate to a time format which can be parsed
         public DateTime convertDate(string date)
         {
-
             string[] dateSplit;
 
             date = LastDate.Substring(1, this.LastDate.Length - 2);
             dateSplit = date.Split();
             date = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-            
-            DateTime ParsedDate; // = DateTime.Parse(date);
+            DateTime ParsedDate = DateTime.Parse(date);
 
             //Try to parse date for known cultural formats
 
@@ -1014,7 +1016,6 @@ namespace SlskTransferStatsUI
             MessageBox.Show("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
             //System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
-            
         }
         
     }
@@ -1092,7 +1093,7 @@ namespace SlskTransferStatsUI
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
                                         drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                        Console.WriteLine(drive);
+                                        //Console.WriteLine(drive);
                                         break;
                                      }
                                 }
