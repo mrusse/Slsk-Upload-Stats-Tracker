@@ -994,10 +994,6 @@ namespace SlskTransferStatsUI
         //Converts the LastDate to a time format which can be parsed
         public DateTime convertDate(string date)
         {
-            string[] formatsEnUs = { "ddd, dd MMM HH':'mm':'ss yyyy" };
-            //string[] formatsEnGB = { "ddd MMM dd yyyy HH':'mm':'ss" };
-            string[] formatsFrFr = { "ddd, dd MMM yyyy HH':'mm':'ss" };
-            //string[] formatsDeDe = { "ddd, dd MMM yyyy HH':'mm':'ss" };
 
             string[] dateSplit;
 
@@ -1008,30 +1004,16 @@ namespace SlskTransferStatsUI
             DateTime ParsedDate; // = DateTime.Parse(date);
 
             //Try to parse date for known cultural formats
+
+            if (DateTime.TryParse(date, out ParsedDate))
+            {
+                return ParsedDate;
+            }
             
-            if (DateTime.TryParseExact(date, formatsEnUs, new CultureInfo("en-US"), DateTimeStyles.None, out ParsedDate))
-            {
-                return ParsedDate;
-            }
-
-            //if (DateTime.TryParseExact(date, formatsEnGB, new CultureInfo("en-GB"), DateTimeStyles.None, out ParsedDate))
-            //{
-            //    return ParsedDate;
-            //}
-
-            if (DateTime.TryParseExact(date, formatsFrFr, new CultureInfo("fr-FR"), DateTimeStyles.None, out ParsedDate))
-            {
-                return ParsedDate;
-            }
-
-            //if (DateTime.TryParseExact(date, formatsDeDe, new CultureInfo("de-De"), DateTimeStyles.None, out ParsedDate))
-            //{
-            //    return ParsedDate;
-            //}
-
+            //Error if datestring not found
+            MessageBox.Show("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
+            //System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
-            
-            //return ParsedDate;
             
         }
         
