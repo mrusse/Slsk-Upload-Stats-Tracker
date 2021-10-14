@@ -999,6 +999,7 @@ namespace SlskTransferStatsUI
         public DateTime convertDate(string date)
         {
             string[] dateSplit;
+            DateTime ParsedDate;
 
             date = LastDate.Substring(1, this.LastDate.Length - 2);
             dateSplit = date.Split();
