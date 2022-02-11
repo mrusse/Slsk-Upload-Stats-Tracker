@@ -1145,7 +1145,7 @@ namespace SlskTransferStatsUI
                                     if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                     {
                                         drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                        Console.WriteLine(drive);
+                                        //Console.WriteLine(drive);
                                         break;
                                     }
                                 }
@@ -1304,9 +1304,18 @@ namespace SlskTransferStatsUI
                         if((j != i) && (folders[i].Path.ToLower() == folders[j].Path.ToLower())){
                             if(i < j)
                             {
-                                
+ 
+                                //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                                if (folders[i].LastTimeDownloaded.Contains("]"))
+                                {
+                                    Console.WriteLine("BUGGED SQUARE BRACKET " + folders[i].LastTimeDownloaded + "\n");
+                                    folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
+
+                                }
+
                                 DateTime date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
                                 DateTime date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
+                                
 
                                 if(date1 >= date2)
                                 {
