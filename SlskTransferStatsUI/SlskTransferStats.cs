@@ -405,10 +405,32 @@ namespace SlskTransferStatsUI
                     string[] dateSplit = lastDate.Split();
                     lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
 
+                    //Determine if download size is in kb, mb or gb
+
+                    string downloadString = "";
+                    decimal totalDlDecimal = Convert.ToDecimal(users[i].TotalDownloadSize);
+
+                    if (users[i].TotalDownloadSize < 1000)
+                    {
+                        downloadString = totalDlDecimal.ToString("#.###") + " kb";
+                    }
+                    if(users[i].TotalDownloadSize > 1000 && users[i].TotalDownloadSize < 1000000)
+                    {
+                        totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
+                        downloadString = totalDlDecimal.ToString("#.###") + " mb";
+                    }
+                    if (users[i].TotalDownloadSize > 1000000)
+                    {
+                        totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
+                        downloadString = totalDlDecimal.ToString("#.###") + " gb";
+                    }
+
+                    //Console.WriteLine("here");
+
                     //Update text
                     label5.Text = "User Information";
                     textBox4.AppendText("Username: " + users[i].Username + "\r\n\r\nNumber of downloads by user: " + users[i].DownloadNum +
-                                        "\r\n\r\nLast download: " + lastDate + "\r\n\r\nTotal download size: " + users[i].TotalDownloadSize + " kb");
+                                        "\r\n\r\nLast download: " + lastDate + "\r\n\r\nTotal download size: " + downloadString);
                     userFolder = true;
                     break;
 
@@ -453,6 +475,27 @@ namespace SlskTransferStatsUI
 
                     if (users[index].DownloadList[i].Filename == selectedNodeText)
                     {
+
+                        //Determine if download size is in kb, mb or gb
+
+                        string downloadString = "";
+                        decimal totalDlDecimal = Convert.ToDecimal(users[index].DownloadList[i].Size);
+
+                        if (users[index].DownloadList[i].Size < 1000)
+                        {
+                            downloadString = totalDlDecimal.ToString("#.###") + " kb";
+                        }
+                        if (users[index].DownloadList[i].Size > 1000 && users[index].DownloadList[i].Size < 1000000)
+                        {
+                            totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
+                            downloadString = totalDlDecimal.ToString("#.###") + " mb";
+                        }
+                        if (users[index].DownloadList[i].Size > 1000000)
+                        {
+                            totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
+                            downloadString = totalDlDecimal.ToString("#.###") + " gb";
+                        }
+
                         //the classic date re arange that could be a function 
                         string lastDate = users[index].DownloadList[i].Date.Substring(1, users[i].LastDate.Length - 2);
                         string[] dateSplit = lastDate.Split();
@@ -462,8 +505,8 @@ namespace SlskTransferStatsUI
 
                         label5.Text = "File Information";
                         textBox4.AppendText("Filename: " + users[index].DownloadList[i].Filename + 
-                                            "\r\n\r\nFile size: " + users[index].DownloadList[i].Size +
-                                            " kb\r\n\r\nNumber of times downloaded: " + downloadCount +
+                                            "\r\n\r\nFile size: " + downloadString +
+                                            "\r\n\r\nNumber of times downloaded: " + downloadCount +
                                             "\r\n\r\nDate downloaded: " + lastDate +
                                             "\r\n\r\nFile path: " + users[index].DownloadList[i].Path);
                         break;
