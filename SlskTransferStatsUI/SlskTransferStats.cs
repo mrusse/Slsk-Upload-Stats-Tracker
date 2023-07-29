@@ -1351,14 +1351,32 @@ namespace SlskTransferStatsUI
                                 //TODO: fix this bug that somehow adds a square bracket in the middle of the date
                                 if (folders[i].LastTimeDownloaded.Contains("]"))
                                 {
-                                    Console.WriteLine("BUGGED SQUARE BRACKET " + folders[i].LastTimeDownloaded + "\n");
+                                    Console.WriteLine("BUGGED SQUARE BRACKET in folders[i]" + folders[i].LastTimeDownloaded + "\n");
                                     folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
+                                }
+
+                                //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                                if (folders[j].LastTimeDownloaded.Contains("]"))
+                                {
+                                    Console.WriteLine("BUGGED SQUARE BRACKET in folders[j]" + folders[j].LastTimeDownloaded + "\n");
+                                    folders[j].LastTimeDownloaded = folders[j].LastTimeDownloaded.Replace(@"]", "");
 
                                 }
 
-                                DateTime date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
-                                DateTime date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
-                                
+                                DateTime date1 = default(DateTime);
+                                DateTime date2 = default(DateTime);
+
+                                try
+                                {
+                                    date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
+                                    date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e.Message);
+                                    Console.WriteLine(folders[i].LastTimeDownloaded);
+                                    Console.WriteLine(folders[j].LastTimeDownloaded);
+                                }
 
                                 if(date1 >= date2)
                                 {
