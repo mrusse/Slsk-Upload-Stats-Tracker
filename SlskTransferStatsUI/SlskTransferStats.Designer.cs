@@ -62,6 +62,7 @@ namespace SlskTransferStatsUI
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.label7 = new System.Windows.Forms.Label();
             this.DataInput = new System.Windows.Forms.TabPage();
+            this.richTextBox6 = new System.Windows.Forms.RichTextBox();
             this.richTextBox3 = new System.Windows.Forms.RichTextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -393,6 +394,8 @@ namespace SlskTransferStatsUI
             // 
             this.checkBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox5.AutoSize = true;
+            this.checkBox5.Checked = true;
+            this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox5.ForeColor = System.Drawing.Color.White;
             this.checkBox5.Location = new System.Drawing.Point(1255, 458);
@@ -421,8 +424,6 @@ namespace SlskTransferStatsUI
             // 
             this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox3.ForeColor = System.Drawing.Color.White;
             this.checkBox3.Location = new System.Drawing.Point(1013, 458);
@@ -564,6 +565,7 @@ namespace SlskTransferStatsUI
             // 
             this.DataInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
             this.DataInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DataInput.Controls.Add(this.richTextBox6);
             this.DataInput.Controls.Add(this.richTextBox3);
             this.DataInput.Controls.Add(this.button2);
             this.DataInput.Controls.Add(this.button1);
@@ -579,6 +581,20 @@ namespace SlskTransferStatsUI
             this.DataInput.TabIndex = 0;
             this.DataInput.Text = "Data Input";
             // 
+            // richTextBox6
+            // 
+            this.richTextBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.richTextBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox6.ForeColor = System.Drawing.Color.White;
+            this.richTextBox6.Location = new System.Drawing.Point(930, 60);
+            this.richTextBox6.Name = "richTextBox6";
+            this.richTextBox6.ReadOnly = true;
+            this.richTextBox6.Size = new System.Drawing.Size(609, 117);
+            this.richTextBox6.TabIndex = 7;
+            this.richTextBox6.Text = "";
+            this.richTextBox6.WordWrap = false;
+            // 
             // richTextBox3
             // 
             this.richTextBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -586,10 +602,10 @@ namespace SlskTransferStatsUI
             this.richTextBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.richTextBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox3.ForeColor = System.Drawing.Color.White;
-            this.richTextBox3.Location = new System.Drawing.Point(930, 60);
+            this.richTextBox3.Location = new System.Drawing.Point(930, 209);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(609, 711);
+            this.richTextBox3.Size = new System.Drawing.Size(609, 562);
             this.richTextBox3.TabIndex = 6;
             this.richTextBox3.Text = "";
             this.richTextBox3.WordWrap = false;
@@ -856,6 +872,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.RichTextBox richTextBox5;
+        private System.Windows.Forms.RichTextBox richTextBox6;
     }
 }
 

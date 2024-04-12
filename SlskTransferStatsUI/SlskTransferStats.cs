@@ -283,12 +283,15 @@ namespace SlskTransferStatsUI
         {
             Program.FileRead wr = new Program.FileRead();
             File.WriteAllText("parsingData.txt", textBox1.Text);
-            textBox1.Text = "";
+            richTextBox6.Rtf = "";
             richTextBox3.Text = "";
+            textBox1.Text = "";
             if (File.Exists("settings.ini"))
             {
                 textBox1.Text = "";
-                richTextBox3.Rtf = wr.ParseData().Rtf;
+                RichTextBox[] textBoxes = wr.ParseData();
+                richTextBox6.Rtf = textBoxes[1].Rtf;
+                richTextBox3.Rtf = textBoxes[0].Rtf;
                 loadTree();
             }
             else
@@ -304,6 +307,7 @@ namespace SlskTransferStatsUI
         private void button2_Click(object sender, EventArgs e)
         {
             richTextBox3.Rtf = "";
+            richTextBox6.Rtf = "";
         }
 
         //These variables are for searching  source: "https://stackoverflow.com/questions/11530643/treeview-search" 
@@ -1069,7 +1073,7 @@ namespace SlskTransferStatsUI
         public class FileRead
         {
 
-            public RichTextBox ParseData()
+            public RichTextBox[] ParseData()
             {
                 //Open files TODO: change test2 and get rid of parser file or change
                 FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
@@ -1100,10 +1104,16 @@ namespace SlskTransferStatsUI
                 int index;
                 bool added;
                 long size;
+                long totalSize = 0;
+                int newUserCount = 0;
+                int oldUserCount = 0;
+                int filesAdded = 0;
                 string folder;
-                RichTextBox info = new RichTextBox();             
+                RichTextBox info = new RichTextBox();
+                RichTextBox stats = new RichTextBox();
                 int dateLength;
-                string[] dateSplit;              
+                string[] dateSplit;
+                List<string> oldUserList = new List<string>();
 
                 //loop through file made by input data
                 while (str != null)
@@ -1147,6 +1157,7 @@ namespace SlskTransferStatsUI
 
                                 if (File.Exists(path)){
                                     size = new FileInfo(path).Length / 1000;
+                                    totalSize += size;
                                 }
                                 else
                                 {
@@ -1173,7 +1184,10 @@ namespace SlskTransferStatsUI
 
                                 downloads.Add(new Download(filename, path, size, date));
                                 users.Add(new Person(username, 1, size, date, downloads));
+                                oldUserList.Add(username);
                                 index = users.FindIndex(person => person.Username == username);
+                                newUserCount += 1;
+                                filesAdded += 1;
 
                             }
                             //user already in the database
@@ -1200,6 +1214,7 @@ namespace SlskTransferStatsUI
 
                                 if (File.Exists(path)){
                                     size = new FileInfo(path).Length / 1000;
+                                    totalSize += size;
                                 }
                                 else
                                 {
@@ -1227,9 +1242,6 @@ namespace SlskTransferStatsUI
                                 //if not added, add it to their downloads list
                                 if (added == false)
                                 {
-
-                                    
-
                                     users[index].DownloadList.Add(new Download(filename, path, size, date));
                                     users[index] = new Person(username,
                                                               users[index].DownloadNum + 1,
@@ -1237,6 +1249,16 @@ namespace SlskTransferStatsUI
                                                               users[index].DownloadList[users[index].DownloadList.Count - 1].Date,
                                                               users[index].DownloadList);
 
+                                    //Check if user has been added to the text box already
+                                    if (oldUserList.IndexOf(username) == -1)
+                                    {
+                                        oldUserList.Add(username);
+                                        oldUserCount += 1;
+                                        info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                                        info.SelectionColor = Color.White;
+                                        info.AppendText("Returning user found: " + username + "\r\n");
+                                    }
+                                    
                                     //info for the output textbox
                                     info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
                                     info.SelectionColor = Color.White;
@@ -1248,7 +1270,7 @@ namespace SlskTransferStatsUI
                                     info.SelectionColor = Color.White;
                                     info.AppendText("\": " + users[index].DownloadList[users[index].DownloadList.Count - 1].Filename +"\r\n");
 
-
+                                    filesAdded += 1;
                                 }
 
                             }
@@ -1260,7 +1282,61 @@ namespace SlskTransferStatsUI
                     str = sr.ReadLine();
                 }
 
-                
+                if(oldUserCount != 0 || newUserCount != 0)
+                {
+                    string totalSizeString = "";
+                    decimal totalSizeDecimal = Convert.ToDecimal(totalSize);
+
+                    if (totalSize < 1000)
+                    {
+                        totalSizeString = totalSizeDecimal.ToString("#.###") + " kb";
+                    }
+                    if (totalSize > 1000 && totalSize < 1000000)
+                    {
+                        totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000);
+                        totalSizeString = totalSizeDecimal.ToString("#.###") + " mb";
+                    }
+                    if (totalSize > 1000000)
+                    {
+                        totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000000);
+                        totalSizeString = totalSizeDecimal.ToString("#.###") + " gb";
+                    }
+
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText("Total size of added data: ");
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText(totalSizeString + "\r\n");
+
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText("Number of files uploaded: ");
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText(filesAdded + "\r\n");
+
+                    if (newUserCount > 0)
+                    {
+                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                        stats.SelectionColor = Color.White;
+                        stats.AppendText("New user count: ");
+                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                        stats.SelectionColor = Color.White;
+                        stats.AppendText(newUserCount + "\r\n");
+                    }
+
+                    if (oldUserCount > 0)
+                    {
+                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                        stats.SelectionColor = Color.White;
+                        stats.AppendText("Returning user count: ");
+                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                        stats.SelectionColor = Color.White;
+                        stats.AppendText(oldUserCount + "\r\n");
+                    }
+                }
+
                 string foldername;
                 bool folderDL;
                 int folderIndex;
@@ -1418,7 +1494,8 @@ namespace SlskTransferStatsUI
                 fs2.Close();
 
                 //retuirn info for output box
-                return info;
+                RichTextBox[] textBoxReturn = { info, stats };
+                return textBoxReturn;
             }
         }
 
