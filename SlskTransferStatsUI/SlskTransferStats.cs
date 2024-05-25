@@ -1311,7 +1311,8 @@ namespace SlskTransferStatsUI
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            progressBar1.Value = 1;
+            progressBar1.Minimum = 0;
+            progressBar1.Value = 0;
         }
     }
 
