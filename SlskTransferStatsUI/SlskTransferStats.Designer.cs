@@ -77,6 +77,7 @@ namespace SlskTransferStatsUI
             this.label3 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -544,6 +545,7 @@ namespace SlskTransferStatsUI
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(980, 893);
             this.treeView1.TabIndex = 0;
+            this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
@@ -791,6 +793,10 @@ namespace SlskTransferStatsUI
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            // 
             // SlskTransferStats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -873,6 +879,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.RichTextBox richTextBox5;
         private System.Windows.Forms.RichTextBox richTextBox6;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

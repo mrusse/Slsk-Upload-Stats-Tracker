@@ -56,7 +56,6 @@ namespace SlskTransferStatsUI
 
                 //Load tree (this does not call the parser for folder information, that only happens on the database button click)
                 loadTree();
-
             }
             else
             {
@@ -65,9 +64,6 @@ namespace SlskTransferStatsUI
                 textBox7.Text = "\r\nPlease initialize your settings";
 
             }
-
-                    
-
         }
         
         //Outside the class because I access them further down
@@ -76,10 +72,7 @@ namespace SlskTransferStatsUI
 
         public List<Person> loadTree()
         {
-
-            string folder;
             string input;
-            int folderCount;
 
             //Clear nodes so their are no dupes
             treeView1.Nodes.Clear();
@@ -226,35 +219,16 @@ namespace SlskTransferStatsUI
                 treeView1.BeginUpdate();
                 long totalDownloadSize = 0;
                 int downloadCount = 0;
-                
 
                 //Actual tree building
                 for (int i = 0; i < users.Count; i++)
                 {
+                    totalDownloadSize += users[i].TotalDownloadSize;
+                    downloadCount += users[i].DownloadNum;
+
                     //parent node
-                    treeView1.Nodes.Add(users[i].Username);                   
-                    folderCount = -1;
-
-                    for (int j = 0; j < users[i].DownloadList.Count; j++)
-                    {
-                        //get folder
-                        folder = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
-
-                        if (j == 0 || (users[i].DownloadList[j - 1].Path.Substring(0, users[i].DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
-                        {
-                            //first child (folders)
-                            treeView1.Nodes[i].Nodes.Add(folder);
-                            folderCount++;
-
-                        }
-                        //second child (songs)
-                        treeView1.Nodes[i].Nodes[folderCount].Nodes.Add(users[i].DownloadList[j].Filename);
-                        totalDownloadSize += users[i].DownloadList[j].Size;                        
-                        downloadCount++;
-
-                    }
-
-
+                    treeView1.Nodes.Add(users[i].Username);
+                    treeView1.Nodes[i].Nodes.Add("");
                 }
 
                 //General stats textbox
@@ -268,28 +242,56 @@ namespace SlskTransferStatsUI
                 //search text
                 label15.Text = "";
 
-                treeView1.SelectedNode = treeView1.Nodes[0];
-                treeView1.Nodes[0].EnsureVisible();
-                treeView1.EndUpdate();
             }
+            treeView1.SelectedNode = treeView1.Nodes[0];
+            treeView1.Nodes[0].EnsureVisible();
+            treeView1.EndUpdate();
 
             //I used this at one point not sure if its used anymore lol
             return users;
+        }
 
+        private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if(e.Node.Parent == null)
+            {
+                e.Node.Nodes.Clear();
+
+                int folderCount = -1;
+                long totalDownloadSize = 0;
+                int downloadCount = 0;
+                Person user = users.Find(i => i.Username == e.Node.Text);
+
+                for (int j = 0; j < user.DownloadList.Count; j++)
+                {
+                    //get folder
+                    string folder = user.DownloadList[j].Path.Substring(0, user.DownloadList[j].Path.LastIndexOf("\\"));
+
+                    if (j == 0 || (user.DownloadList[j - 1].Path.Substring(0, user.DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
+                    {
+                        //first child (folders)
+                        e.Node.Nodes.Add(folder);
+                        folderCount++;
+
+                    }
+                    //second child (songs)
+                    e.Node.Nodes[folderCount].Nodes.Add(user.DownloadList[j].Filename);
+                    Console.WriteLine(user.DownloadList[j].Filename);
+                    totalDownloadSize += user.DownloadList[j].Size;
+                    downloadCount++;
+                }
+            }
         }
 
         //"Submit to database" button click event (writes text to file and parses it, then adds to database)
         private void button1_Click(object sender, EventArgs e)
         {
-            Program.FileRead wr = new Program.FileRead();
             File.WriteAllText("parsingData.txt", textBox1.Text);
             richTextBox6.Rtf = "";
             richTextBox3.Text = "";
-            textBox1.Text = "";
             if (File.Exists("settings.ini"))
             {
-                textBox1.Text = "";
-                RichTextBox[] textBoxes = wr.ParseData();
+                RichTextBox[] textBoxes = ParseData();
                 richTextBox6.Rtf = textBoxes[1].Rtf;
                 richTextBox3.Rtf = textBoxes[0].Rtf;
                 loadTree();
@@ -522,6 +524,12 @@ namespace SlskTransferStatsUI
 
         }
 
+        public string TextBox1
+        {
+            get { return textBox1.Text; }
+            set { textBox1.Text = value; }
+        }
+
         //"Database save location: " button in settings (opens a folder pick dialog)
         private void button5_Click(object sender, EventArgs e)
         {
@@ -705,7 +713,6 @@ namespace SlskTransferStatsUI
             if (confirmResult == DialogResult.Yes)
             {
                 string selectedNodeText = treeView1.SelectedNode.Text;
-                Program.FileRead wr = new Program.FileRead();
 
                 TreeNode node = treeView1.SelectedNode;
                 while (node.Parent != null)
@@ -770,7 +777,7 @@ namespace SlskTransferStatsUI
                             }
                             string output = JsonConvert.SerializeObject(users);
                             System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
-                            wr.ParseData();
+                            ParseData();
                             loadTree();
                         }
                         else
@@ -799,7 +806,6 @@ namespace SlskTransferStatsUI
                         string output = JsonConvert.SerializeObject(users);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
-                        wr = new Program.FileRead();
                         if (File.Exists("settings.ini"))
                         {
                             textBox1.Text = "";
@@ -807,7 +813,7 @@ namespace SlskTransferStatsUI
                             {
                                 File.Delete("parsingData.txt");
                             }
-                            wr.ParseData();
+                            ParseData();
                             loadTree();
                         }
                         else
@@ -839,7 +845,6 @@ namespace SlskTransferStatsUI
                         string output = JsonConvert.SerializeObject(users);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
-                        wr = new Program.FileRead();
                         if (File.Exists("settings.ini"))
                         {
                             textBox1.Text = "";
@@ -847,7 +852,7 @@ namespace SlskTransferStatsUI
                             {
                                 File.Delete("parsingData.txt");
                             }
-                            wr.ParseData();
+                            ParseData();
                             loadTree();
                         }
                         else
@@ -936,8 +941,8 @@ namespace SlskTransferStatsUI
                 {
                     File.Delete("parsingData.txt");
                 }
-                Program.FileRead wr = new Program.FileRead();
-                wr.ParseData();
+
+                ParseData();
                 loadTree();
                 checkBox1.Checked = false;
             }
@@ -963,6 +968,451 @@ namespace SlskTransferStatsUI
                     textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
                 }
             }
+
+        }
+
+        public RichTextBox[] ParseData()
+        {
+            //Open files TODO: change test2 and get rid of parser file or change
+            FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
+            FileStream fs2 = new FileStream("parsedData.txt", FileMode.Create, FileAccess.Write);
+            StreamReader sr = new StreamReader(fs);
+            StreamWriter sw = new StreamWriter(fs2);
+            sr.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            List<Person> users = new List<Person>();
+            List<Folder> folders = new List<Folder>();
+            string input;
+
+            //Deserializes the database and sorts it
+            if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
+            {
+                input = System.IO.File.ReadAllText(@Globals.UserDataFile + "\\userData.txt");
+                users = JsonConvert.DeserializeObject<List<Person>>(input);
+                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
+            }
+            SlskTransferStats slsk = new SlskTransferStats();
+            string drive = "";
+            string str = sr.ReadLine();
+            string queued;
+            string filename;
+            string username;
+            string path;
+            string date;
+            string wasText = "";
+            int lineEndIndex;
+            int index;
+            bool added;
+            long size;
+            long totalSize = 0;
+            int newUserCount = 0;
+            int oldUserCount = 0;
+            int filesAdded = 0;
+            string folder;
+            RichTextBox info = new RichTextBox();
+            RichTextBox stats = new RichTextBox();
+            int dateLength;
+            int poop = 0;
+            string[] dateSplit;
+            List<string> oldUserList = new List<string>();
+
+            Console.WriteLine("START");
+
+            //loop through file made by input data
+            while (str != null)
+            {
+                //get length of the date section of the file (this changes depending on day of month)
+                dateLength = (str.Substring(0, str.IndexOf("]") + 1)).Length - 1;
+                //Look for the term "Queue" and then on the next line the word "Queued" then parse that line
+                if (str.IndexOf("Queue", dateLength + 2, 5) == dateLength + 2)
+                {
+                    queued = str;
+                    str = sr.ReadLine();
+                    poop += 1;
+                    if (str.IndexOf("Queued", dateLength + 5, 6) == dateLength + 5)
+                    {
+
+                        username = queued.Substring(dateLength + 28, queued.Length - (dateLength + 28));
+                        username = username.Substring(0, username.LastIndexOf(" for file @"));
+
+                        index = users.FindIndex(person => person.Username == username);
+
+                        //if user is not in the database
+                        if (index < 0)
+                        {
+                            //get path
+                            path = queued.Substring(queued.IndexOf("\\"));
+
+                            //math path with no drive to path from settings with drive (then extract the drive from this string)
+                            for (int i = 0; i < Globals.SlskFolders.Count; i++)
+                            {
+                                string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
+                                if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
+                                {
+                                    drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                    //Console.WriteLine(drive);
+                                    break;
+                                }
+                            }
+                            //add drive to path
+                            path = drive + path;
+
+                            filename = queued.Substring(queued.LastIndexOf("\\") + 1);
+
+                            if (File.Exists(path))
+                            {
+                                size = new FileInfo(path).Length / 1000;
+                                totalSize += size;
+                            }
+                            else
+                            {
+                                size = 0;
+                            }
+
+                            date = queued.Substring(0, queued.IndexOf("]") + 1);
+
+                            //create downloads list and add a download
+                            List<Download> downloads = new List<Download>();
+
+                            info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                            info.SelectionColor = Color.White;
+                            info.AppendText("New user found: " + username + "\r\n");
+                            info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                            info.SelectionColor = Color.White;
+                            info.AppendText("\tNew download for \"");
+                            info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                            info.SelectionColor = Color.White;
+                            info.AppendText(username);
+                            info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                            info.SelectionColor = Color.White;
+                            info.AppendText("\": " + filename + "\r\n");
+
+                            downloads.Add(new Download(filename, path, size, date));
+                            users.Add(new Person(username, 1, size, date, downloads));
+                            oldUserList.Add(username);
+                            index = users.FindIndex(person => person.Username == username);
+                            newUserCount += 1;
+                            filesAdded += 1;
+
+                        }
+                        //user already in the database
+                        else
+                        {
+                            path = queued.Substring(queued.IndexOf("\\"));
+
+                            //math path with no drive to path from settings with drive (then extract the drive from this string)
+                            for (int i = 0; i < Globals.SlskFolders.Count; i++)
+                            {
+                                string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
+                                if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
+                                {
+                                    drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
+                                    //Console.WriteLine(drive);
+                                    break;
+                                }
+                            }
+                            path = drive + path;
+
+
+
+                            filename = queued.Substring(queued.LastIndexOf("\\") + 1);
+
+                            if (File.Exists(path))
+                            {
+                                size = new FileInfo(path).Length / 1000;
+                                totalSize += size;
+                            }
+                            else
+                            {
+                                size = 0;
+                                //Console.WriteLine(path);
+                            }
+
+
+                            date = queued.Substring(0, queued.IndexOf("]") + 1);
+
+                            added = false;
+
+                            //check if file is already in their downloads
+                            for (int i = 0; i < users[index].DownloadList.Count; i++)
+                            {
+
+                                if (users[index].DownloadList[i].Filename == filename && users[index].DownloadList[i].Date == date)
+                                {
+                                    added = true;
+                                    break;
+                                }
+
+                            }
+
+                            //if not added, add it to their downloads list
+                            if (added == false)
+                            {
+                                users[index].DownloadList.Add(new Download(filename, path, size, date));
+                                users[index] = new Person(username,
+                                                          users[index].DownloadNum + 1,
+                                                          users[index].TotalDownloadSize += size,
+                                                          users[index].DownloadList[users[index].DownloadList.Count - 1].Date,
+                                                          users[index].DownloadList);
+
+                                //Check if user has been added to the text box already
+                                if (oldUserList.IndexOf(username) == -1)
+                                {
+                                    oldUserList.Add(username);
+                                    oldUserCount += 1;
+                                    info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                                    info.SelectionColor = Color.White;
+                                    info.AppendText("Returning user found: " + username + "\r\n");
+                                }
+
+                                //info for the output textbox
+                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                                info.SelectionColor = Color.White;
+                                info.AppendText("\tNew download for \"");
+                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                                info.SelectionColor = Color.White;
+                                info.AppendText(users[index].Username);
+                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                                info.SelectionColor = Color.White;
+                                info.AppendText("\": " + users[index].DownloadList[users[index].DownloadList.Count - 1].Filename + "\r\n");
+
+                                filesAdded += 1;
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                str = sr.ReadLine();
+                poop += 1;
+                //Console.WriteLine(poop);
+            }
+
+
+            Console.WriteLine("DONE");
+
+            if (oldUserCount != 0 || newUserCount != 0)
+            {
+                string totalSizeString = "";
+                decimal totalSizeDecimal = Convert.ToDecimal(totalSize);
+
+                if (totalSize < 1000)
+                {
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " kb";
+                }
+                if (totalSize > 1000 && totalSize < 1000000)
+                {
+                    totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000);
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " mb";
+                }
+                if (totalSize > 1000000)
+                {
+                    totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000000);
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " gb";
+                }
+
+                stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                stats.SelectionColor = Color.White;
+                stats.AppendText("Total size of added data: ");
+                stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                stats.SelectionColor = Color.White;
+                stats.AppendText(totalSizeString + "\r\n");
+
+                stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                stats.SelectionColor = Color.White;
+                stats.AppendText("Number of files uploaded: ");
+                stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                stats.SelectionColor = Color.White;
+                stats.AppendText(filesAdded + "\r\n");
+
+                if (newUserCount > 0)
+                {
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText("New user count: ");
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText(newUserCount + "\r\n");
+                }
+
+                if (oldUserCount > 0)
+                {
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText("Returning user count: ");
+                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
+                    stats.SelectionColor = Color.White;
+                    stats.AppendText(oldUserCount + "\r\n");
+                }
+            }
+
+            string foldername;
+            bool folderDL;
+            int folderIndex;
+            string output;
+            string lastDate;
+
+
+            //Get folder information from the database TODO: remove the parser file output
+            for (int i = 0; i < users.Count; i++)
+            {
+
+
+                sw.WriteLine("User: " + users[i].Username + ", Number of downloads: " + users[i].DownloadNum + ", " +
+                             "Last Download: " + users[i].LastDate + ", Total download size: " + users[i].TotalDownloadSize +
+                             " kb" + "\n\n\tUsers Downloads:\n");
+
+
+
+                for (int j = 0; j < users[i].DownloadList.Count; j++)
+                {
+
+                    folder = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
+                    foldername = folder.Substring(folder.LastIndexOf("\\") + 1);
+
+                    //Change date format
+                    lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
+                    dateSplit = lastDate.Split();
+                    lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
+
+                    if (j == 0 || (users[i].DownloadList[j - 1].Path.Substring(0, users[i].DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
+                    {
+
+                        if (folders.Count == 0)
+                        {
+
+                            folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
+                        }
+                        else
+                        {
+                            folderDL = false;
+
+                            for (int k = 0; k < folders.Count; k++)
+                            {
+
+                                if (folders[k].Path == folder && (folders[k].LatestUser != users[i].Username))
+                                {
+                                    folders[k] = new Folder(folder, foldername, folders[k].DownloadNum += 1, users[i].Username, lastDate);
+                                    folderDL = true;
+                                    break;
+                                }
+
+                            }
+
+                            if (folderDL == false)
+                            {
+
+                                folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
+
+
+                            }
+
+
+                        }
+
+                        folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
+                        sw.WriteLine("\t" + folder + "\tTotal folder download count: " + folders[folderIndex].DownloadNum);
+
+
+                    }
+
+
+                    sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " kb ");
+
+                }
+                sw.WriteLine("\n");
+
+            }
+
+            //removes duplicated in the folder list caused by slsk sometimes giving fully lowercased filepaths in the log file
+            for (int i = 0; i < folders.Count; i++)
+            {
+                for (int j = 0; j < folders.Count; j++)
+                {
+                    if ((j != i) && (folders[i].Path.ToLower() == folders[j].Path.ToLower()))
+                    {
+                        if (i < j)
+                        {
+
+                            //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                            if (folders[i].LastTimeDownloaded.Contains("]"))
+                            {
+                                //Console.WriteLine("BUGGED SQUARE BRACKET in folders[i]" + folders[i].LastTimeDownloaded + "\n");
+                                folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
+                            }
+
+                            //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                            if (folders[j].LastTimeDownloaded.Contains("]"))
+                            {
+                                //Console.WriteLine("BUGGED SQUARE BRACKET in folders[j]" + folders[j].LastTimeDownloaded + "\n");
+                                folders[j].LastTimeDownloaded = folders[j].LastTimeDownloaded.Replace(@"]", "");
+
+                            }
+
+                            DateTime date1 = default(DateTime);
+                            DateTime date2 = default(DateTime);
+
+                            try
+                            {
+                                date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
+                                date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
+                            }
+                            catch (Exception e)
+                            {
+                                //Console.WriteLine(e.Message);
+                                //Console.WriteLine(folders[i].LastTimeDownloaded);
+                                //Console.WriteLine(folders[j].LastTimeDownloaded);
+                            }
+
+                            if (date1 >= date2)
+                            {
+                                folders[j].LatestUser = folders[i].LatestUser;
+                                folders[j].LastTimeDownloaded = folders[i].LastTimeDownloaded;
+                            }
+                            else
+                            {
+                                folders[i].LatestUser = folders[j].LatestUser;
+                                folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
+                            }
+
+                            folders[i].DownloadNum += folders[j].DownloadNum;
+
+                        }
+                        else
+                        {
+                            folders[i].DownloadNum = folders[j].DownloadNum;
+                            folders[i].LatestUser = folders[j].LatestUser;
+                            folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
+                        }
+
+                    }
+                }
+            }
+
+            //sort and save database
+            users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
+            output = JsonConvert.SerializeObject(users);
+            System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
+
+            output = JsonConvert.SerializeObject(folders);
+            System.IO.File.WriteAllText(@Globals.UserDataFile + "\\fileData.txt", output);
+
+            sr.Close();
+            fs.Close();
+            sw.Flush();
+            sw.Close();
+            fs2.Close();
+
+            //retuirn info for output box
+            RichTextBox[] textBoxReturn = { info, stats };
+            return textBoxReturn;
+        }
+
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
 
         }
     }
@@ -1065,440 +1515,13 @@ namespace SlskTransferStatsUI
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
         }
         
+
+
     }
 
     //Main parsing class (if called it will add new data to the database and rebuild the folder stats from that database)
     public class Program
     {
-        public class FileRead
-        {
-
-            public RichTextBox[] ParseData()
-            {
-                //Open files TODO: change test2 and get rid of parser file or change
-                FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
-                FileStream fs2 = new FileStream("parsedData.txt", FileMode.Create, FileAccess.Write);
-                StreamReader sr = new StreamReader(fs);
-                StreamWriter sw = new StreamWriter(fs2);
-                sr.BaseStream.Seek(0, SeekOrigin.Begin);
-
-                List<Person> users = new List<Person>();
-                List<Folder> folders = new List<Folder>();
-                string input;              
-
-                //Deserializes the database and sorts it
-                if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
-                {
-                    input = System.IO.File.ReadAllText(@Globals.UserDataFile + "\\userData.txt");
-                    users = JsonConvert.DeserializeObject<List<Person>>(input);
-                    users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-                }
-
-                string drive = "";
-                string str = sr.ReadLine();
-                string queued;
-                string filename;
-                string username;
-                string path;
-                string date;
-                int index;
-                bool added;
-                long size;
-                long totalSize = 0;
-                int newUserCount = 0;
-                int oldUserCount = 0;
-                int filesAdded = 0;
-                string folder;
-                RichTextBox info = new RichTextBox();
-                RichTextBox stats = new RichTextBox();
-                int dateLength;
-                string[] dateSplit;
-                List<string> oldUserList = new List<string>();
-
-                //loop through file made by input data
-                while (str != null)
-                {
-                    //get length of the date section of the file (this changes depending on day of month)
-                    dateLength = (str.Substring(0, str.IndexOf("]") + 1)).Length -1;
-                    //Look for the term "Queue" and then on the next line the word "Queued" then parse that line
-                    if (str.IndexOf("Queue", dateLength + 2, 5) == dateLength + 2)
-                    {
-                        queued = str;
-                        str = sr.ReadLine();
-                        if (str.IndexOf("Queued", dateLength + 5, 6) == dateLength + 5)
-                        {
-
-                            username = queued.Substring(dateLength + 28, queued.Length - (dateLength + 28));
-                            username = username.Substring(0, username.LastIndexOf(" for file @"));
-
-                            index = users.FindIndex(person => person.Username == username);
-
-                            //if user is not in the database
-                            if (index < 0)
-                            {
-                                //get path
-                                path = queued.Substring(queued.IndexOf("\\"));
-  
-                                //math path with no drive to path from settings with drive (then extract the drive from this string)
-                                for(int i = 0; i < Globals.SlskFolders.Count; i++)
-                                {
-                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
-                                    if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
-                                    {
-                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                        //Console.WriteLine(drive);
-                                        break;
-                                     }
-                                }
-                                //add drive to path
-                                path = drive + path;
-
-                                filename = queued.Substring(queued.LastIndexOf("\\") + 1);
-
-                                if (File.Exists(path)){
-                                    size = new FileInfo(path).Length / 1000;
-                                    totalSize += size;
-                                }
-                                else
-                                {
-                                    size = 0;
-                                }
-
-                                date = queued.Substring(0, queued.IndexOf("]") + 1);
-
-                                //create downloads list and add a download
-                                List<Download> downloads = new List<Download>();
-
-                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                                info.SelectionColor = Color.White;
-                                info.AppendText("New user found: " + username + "\r\n");
-                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                                info.SelectionColor = Color.White;
-                                info.AppendText("\tNew download for \"");
-                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                                info.SelectionColor = Color.White;
-                                info.AppendText(username);
-                                info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                                info.SelectionColor = Color.White;
-                                info.AppendText("\": " + filename + "\r\n");
-
-                                downloads.Add(new Download(filename, path, size, date));
-                                users.Add(new Person(username, 1, size, date, downloads));
-                                oldUserList.Add(username);
-                                index = users.FindIndex(person => person.Username == username);
-                                newUserCount += 1;
-                                filesAdded += 1;
-
-                            }
-                            //user already in the database
-                            else
-                            {
-                                path = queued.Substring(queued.IndexOf("\\"));
-
-                                //math path with no drive to path from settings with drive (then extract the drive from this string)
-                                for (int i = 0; i < Globals.SlskFolders.Count; i++)
-                                {
-                                    string localPath = Globals.SlskFolders[i].Substring(Globals.SlskFolders[i].LastIndexOf("\\") + 1);
-                                    if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
-                                    {
-                                        drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                        //Console.WriteLine(drive);
-                                        break;
-                                    }
-                                }
-                                path = drive + path;
-
-                                
-
-                                filename = queued.Substring(queued.LastIndexOf("\\") + 1);
-
-                                if (File.Exists(path)){
-                                    size = new FileInfo(path).Length / 1000;
-                                    totalSize += size;
-                                }
-                                else
-                                {
-                                    size = 0;
-                                    //Console.WriteLine(path);
-                                }
-
-
-                                date = queued.Substring(0, queued.IndexOf("]") + 1);
-
-                                added = false;
-                                
-                                //check if file is already in their downloads
-                                for (int i = 0; i < users[index].DownloadList.Count; i++)
-                                {
-
-                                    if (users[index].DownloadList[i].Filename == filename && users[index].DownloadList[i].Date == date)
-                                    {
-                                        added = true;
-                                        break;
-                                    }
-
-                                }
-
-                                //if not added, add it to their downloads list
-                                if (added == false)
-                                {
-                                    users[index].DownloadList.Add(new Download(filename, path, size, date));
-                                    users[index] = new Person(username,
-                                                              users[index].DownloadNum + 1,
-                                                              users[index].TotalDownloadSize += size,
-                                                              users[index].DownloadList[users[index].DownloadList.Count - 1].Date,
-                                                              users[index].DownloadList);
-
-                                    //Check if user has been added to the text box already
-                                    if (oldUserList.IndexOf(username) == -1)
-                                    {
-                                        oldUserList.Add(username);
-                                        oldUserCount += 1;
-                                        info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                                        info.SelectionColor = Color.White;
-                                        info.AppendText("Returning user found: " + username + "\r\n");
-                                    }
-                                    
-                                    //info for the output textbox
-                                    info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                                    info.SelectionColor = Color.White;
-                                    info.AppendText("\tNew download for \"");
-                                    info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                                    info.SelectionColor = Color.White;
-                                    info.AppendText(users[index].Username);
-                                    info.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                                    info.SelectionColor = Color.White;
-                                    info.AppendText("\": " + users[index].DownloadList[users[index].DownloadList.Count - 1].Filename +"\r\n");
-
-                                    filesAdded += 1;
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    str = sr.ReadLine();
-                }
-
-                if(oldUserCount != 0 || newUserCount != 0)
-                {
-                    string totalSizeString = "";
-                    decimal totalSizeDecimal = Convert.ToDecimal(totalSize);
-
-                    if (totalSize < 1000)
-                    {
-                        totalSizeString = totalSizeDecimal.ToString("#.###") + " kb";
-                    }
-                    if (totalSize > 1000 && totalSize < 1000000)
-                    {
-                        totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000);
-                        totalSizeString = totalSizeDecimal.ToString("#.###") + " mb";
-                    }
-                    if (totalSize > 1000000)
-                    {
-                        totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000000);
-                        totalSizeString = totalSizeDecimal.ToString("#.###") + " gb";
-                    }
-
-                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                    stats.SelectionColor = Color.White;
-                    stats.AppendText("Total size of added data: ");
-                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                    stats.SelectionColor = Color.White;
-                    stats.AppendText(totalSizeString + "\r\n");
-
-                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                    stats.SelectionColor = Color.White;
-                    stats.AppendText("Number of files uploaded: ");
-                    stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                    stats.SelectionColor = Color.White;
-                    stats.AppendText(filesAdded + "\r\n");
-
-                    if (newUserCount > 0)
-                    {
-                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                        stats.SelectionColor = Color.White;
-                        stats.AppendText("New user count: ");
-                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                        stats.SelectionColor = Color.White;
-                        stats.AppendText(newUserCount + "\r\n");
-                    }
-
-                    if (oldUserCount > 0)
-                    {
-                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-                        stats.SelectionColor = Color.White;
-                        stats.AppendText("Returning user count: ");
-                        stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
-                        stats.SelectionColor = Color.White;
-                        stats.AppendText(oldUserCount + "\r\n");
-                    }
-                }
-
-                string foldername;
-                bool folderDL;
-                int folderIndex;
-                string output;
-                string lastDate;
-
-
-                //Get folder information from the database TODO: remove the parser file output
-                for (int i = 0; i < users.Count; i++)
-                {
-
-
-                    sw.WriteLine("User: " + users[i].Username + ", Number of downloads: " + users[i].DownloadNum + ", " +
-                                 "Last Download: " + users[i].LastDate + ", Total download size: " + users[i].TotalDownloadSize +
-                                 " kb" + "\n\n\tUsers Downloads:\n");
-
-
-
-                    for (int j = 0; j < users[i].DownloadList.Count; j++)
-                    {
-
-                        folder = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
-                        foldername = folder.Substring(folder.LastIndexOf("\\") + 1);
-
-                        //Change date format
-                        lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
-                        dateSplit = lastDate.Split();
-                        lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-
-                        if (j == 0 || (users[i].DownloadList[j - 1].Path.Substring(0, users[i].DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
-                        {
-
-                            if (folders.Count == 0)
-                            {
-
-                                folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
-                            }
-                            else
-                            {
-                                folderDL = false;
-
-                                for (int k = 0; k < folders.Count; k++)
-                                {
-                                  
-                                    if (folders[k].Path == folder && (folders[k].LatestUser != users[i].Username))
-                                    {                        
-                                        folders[k] = new Folder(folder, foldername, folders[k].DownloadNum += 1, users[i].Username, lastDate);                                       
-                                        folderDL = true;
-                                        break;
-                                    }
-
-                                }
-
-                                if (folderDL == false)
-                                {
- 
-                                    folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
-
-
-                                }
-
-
-                            }
-
-                            folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
-                            sw.WriteLine("\t" + folder + "\tTotal folder download count: " + folders[folderIndex].DownloadNum);
-
-
-                        }
-
-
-                        sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " kb ");
-
-                    }
-                    sw.WriteLine("\n");
-
-                }
-
-                //removes duplicated in the folder list caused by slsk sometimes giving fully lowercased filepaths in the log file
-                for (int i = 0; i < folders.Count; i++)
-                {
-                    for (int j = 0; j < folders.Count; j++)
-                    {
-                        if((j != i) && (folders[i].Path.ToLower() == folders[j].Path.ToLower())){
-                            if(i < j)
-                            {
- 
-                                //TODO: fix this bug that somehow adds a square bracket in the middle of the date
-                                if (folders[i].LastTimeDownloaded.Contains("]"))
-                                {
-                                    Console.WriteLine("BUGGED SQUARE BRACKET in folders[i]" + folders[i].LastTimeDownloaded + "\n");
-                                    folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
-                                }
-
-                                //TODO: fix this bug that somehow adds a square bracket in the middle of the date
-                                if (folders[j].LastTimeDownloaded.Contains("]"))
-                                {
-                                    Console.WriteLine("BUGGED SQUARE BRACKET in folders[j]" + folders[j].LastTimeDownloaded + "\n");
-                                    folders[j].LastTimeDownloaded = folders[j].LastTimeDownloaded.Replace(@"]", "");
-
-                                }
-
-                                DateTime date1 = default(DateTime);
-                                DateTime date2 = default(DateTime);
-
-                                try
-                                {
-                                    date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
-                                    date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.Message);
-                                    Console.WriteLine(folders[i].LastTimeDownloaded);
-                                    Console.WriteLine(folders[j].LastTimeDownloaded);
-                                }
-
-                                if(date1 >= date2)
-                                {
-                                    folders[j].LatestUser = folders[i].LatestUser;
-                                    folders[j].LastTimeDownloaded = folders[i].LastTimeDownloaded;
-                                }
-                                else
-                                {
-                                    folders[i].LatestUser = folders[j].LatestUser;
-                                    folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
-                                }
-
-                                folders[i].DownloadNum += folders[j].DownloadNum;
-
-                            }
-                            else
-                            {                              
-                                folders[i].DownloadNum = folders[j].DownloadNum;
-                                folders[i].LatestUser = folders[j].LatestUser;
-                                folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
-                            }
-                           
-                        }
-                    }
-                }
-
-                //sort and save database
-                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-                output = JsonConvert.SerializeObject(users);
-                System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
-
-                output = JsonConvert.SerializeObject(folders);
-                System.IO.File.WriteAllText(@Globals.UserDataFile + "\\fileData.txt", output);
-
-                sr.Close();
-                fs.Close();
-                sw.Flush();
-                sw.Close();
-                fs2.Close();
-
-                //retuirn info for output box
-                RichTextBox[] textBoxReturn = { info, stats };
-                return textBoxReturn;
-            }
-        }
-
 
         [STAThread]
         static void Main()
