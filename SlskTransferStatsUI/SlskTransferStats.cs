@@ -272,7 +272,6 @@ namespace SlskTransferStatsUI
                     }
                     //second child (songs)
                     e.Node.Nodes[folderCount].Nodes.Add(user.DownloadList[j].Filename);
-                    Console.WriteLine(user.DownloadList[j].Filename);
                     totalDownloadSize += user.DownloadList[j].Size;
                     downloadCount++;
                 }
@@ -285,7 +284,6 @@ namespace SlskTransferStatsUI
             File.WriteAllText("parsingData.txt", textBox1.Text);
             richTextBox6.Rtf = "";
             richTextBox3.Text = "";
-
 
             int extra = (int)Math.Round(textBox1.Lines.Count() * 0.2);
             progressBar1.Minimum = 1;
