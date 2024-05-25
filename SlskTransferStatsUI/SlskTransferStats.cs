@@ -14,12 +14,10 @@ namespace SlskTransferStatsUI
         public SlskTransferStats()
         {
             InitializeComponent();
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
             this.Icon = new Icon("icon.ico");
 
             //Only load the tree if settings exist TODO: tell the user to set their settings
@@ -36,14 +34,11 @@ namespace SlskTransferStatsUI
 
                 while (str != null)
                 {
-
                     str = sr.ReadLine();
                     Globals.SlskFolders.Add(str);
-
                 }
 
                 Globals.SlskFolders.RemoveAt(Globals.SlskFolders.Count - 1);
-
                 label4.Text = ("Database save location: " + Globals.UserDataFile);
 
                 for (int i = 0; i < Globals.SlskFolders.Count; i++)
@@ -62,7 +57,6 @@ namespace SlskTransferStatsUI
                 textBox4.Text = "Please initialize your settings";
                 textBox1.Text = "Please initialize your settings";
                 textBox7.Text = "\r\nPlease initialize your settings";
-
             }
         }
         
@@ -124,7 +118,6 @@ namespace SlskTransferStatsUI
                             i++;
                             break;
                         }
-
                     }
 
                     if (inFolder == false)
@@ -141,7 +134,6 @@ namespace SlskTransferStatsUI
                 }
 
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
-
             }
 
             if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
@@ -173,7 +165,6 @@ namespace SlskTransferStatsUI
                     userDownload = Decimal.Divide(userDownload, 1000000);
                     richTextBox2.AppendText(users[i].Username + ":\r\n");
                     richTextBox5.AppendText((userDownload).ToString("#.###") + " GB\r\n");
-
                 }
 
                 //Right justify user download size list
@@ -186,7 +177,6 @@ namespace SlskTransferStatsUI
                 string lastuser = "Last user to download: " + users[users.Count - 1].Username;
 
                 //last user to download stat
-                //this is fucked
                 string lastDate = users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date
                                                         .Substring(1, users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date.Length - 2);
 
@@ -195,7 +185,6 @@ namespace SlskTransferStatsUI
                 lastDate = "Last upload date: " + lastDate;
 
                 //Number of users stat
-
                 if (checkBox2.Checked == true)
                 {
                     users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
@@ -304,7 +293,6 @@ namespace SlskTransferStatsUI
                 textBox1.Text = "Please initialize your settings";
                 textBox7.Text = "\r\nPlease initialize your settings";
             }
-
         }
 
         //"Clear output" button
@@ -326,18 +314,14 @@ namespace SlskTransferStatsUI
         {
             string searchText = this.textBox3.Text;
             Search(searchText);
-
         }
 
         private void Search(string searchText)
         {
-
-            
             if (String.IsNullOrEmpty(searchText))
             {
                 return;
             };
-
 
             if (LastSearchText != searchText)
             {
@@ -371,8 +355,6 @@ namespace SlskTransferStatsUI
                 LastSearchText = "";
                 button3.Text = "Search";
             }
- 
-
         }
 
         private void SearchNodes(string SearchText, TreeNode StartNode)
@@ -388,15 +370,12 @@ namespace SlskTransferStatsUI
                     SearchNodes(SearchText, StartNode.Nodes[0]);//Recursive Search 
                 }
                 StartNode = StartNode.NextNode;
-                
             }
-           
         }
 
         //This controls what the info box shows (User stats, Folder stats etc)
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-
             string selectedNodeText = e.Node.Text;
             bool userFolder = false;
             textBox4.Text = "";
@@ -407,7 +386,6 @@ namespace SlskTransferStatsUI
                 //Find what user is selected
                 if (users[i].Username == selectedNodeText)
                 {
-
                     //Format data (yes i do this a lot when i actually store the dates like this it breaks)
                     string lastDate = users[i].LastDate.Substring(1, users[i].LastDate.Length - 2);
                     string[] dateSplit = lastDate.Split();
@@ -433,23 +411,19 @@ namespace SlskTransferStatsUI
                         downloadString = totalDlDecimal.ToString("#.###") + " gb";
                     }
 
-                    //Console.WriteLine("here");
-
                     //Update text
                     label5.Text = "User Information";
                     textBox4.AppendText("Username: " + users[i].Username + "\r\n\r\nNumber of downloads by user: " + users[i].DownloadNum +
                                         "\r\n\r\nLast download: " + lastDate + "\r\n\r\nTotal download size: " + downloadString);
+                   
                     userFolder = true;
                     break;
-
                 }
-
             }
 
             //Same as user for loop but for folders
             for (int i = 0; i < folders.Count; i++)
             {
-
                 if (folders[i].Path == selectedNodeText)
                 {
 
@@ -457,12 +431,11 @@ namespace SlskTransferStatsUI
                     textBox4.AppendText("Folder name: " + folders[i].Foldername + "\r\n\r\nTimes downloaded from: " + folders[i].DownloadNum +
                                         "\r\n\r\nLast user to download: " + folders[i].LatestUser + "\r\n\r\nLast date downloaded: " + 
                                         folders[i].LastTimeDownloaded +  "\r\n\r\nFull path: " + folders[i].Path);
+                    
                     userFolder = true;
                     break;
                     
                 }
-                
-
             }
 
             //if the seleceted not isnt a person or folder it is a file
@@ -475,15 +448,12 @@ namespace SlskTransferStatsUI
                 }
 
                 string user = node.Text;
-
                 int index = users.FindIndex(person => person.Username == user);
 
                 for (int i = 0; i < users[index].DownloadList.Count; i++)
                 {
-
                     if (users[index].DownloadList[i].Filename == selectedNodeText)
                     {
-
                         //Determine if download size is in kb, mb or gb
 
                         string downloadString = "";
@@ -519,9 +489,7 @@ namespace SlskTransferStatsUI
                                             "\r\n\r\nFile path: " + users[index].DownloadList[i].Path);
                         break;
                     }
-
                 }
-
             }
 
         }
@@ -536,14 +504,12 @@ namespace SlskTransferStatsUI
             {
                 Globals.UserDataFile = dialog.SelectedPath;
                 label4.Text = ("Database save location: " + dialog.SelectedPath);
-
             }
         }
 
         //Similar to last
         private void button4_Click(object sender, EventArgs e)
         {
-
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             DialogResult result = dialog.ShowDialog();
 
@@ -560,7 +526,6 @@ namespace SlskTransferStatsUI
         //this will allow for further searches
         private void textBox3_KeyUp(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Enter)
             {
                 string searchText = this.textBox3.Text;
@@ -571,9 +536,7 @@ namespace SlskTransferStatsUI
 
                 e.Handled = true;
                 e.SuppressKeyPress = true;
-
             }
-
         }
 
         //Save settings button (writes info to file)
@@ -601,12 +564,10 @@ namespace SlskTransferStatsUI
                     textBox7.Text = "";
                 }
             }     
-
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-
             if (checkBox1.Checked == true)
             {
                 treeView1.ExpandAll();
@@ -636,7 +597,6 @@ namespace SlskTransferStatsUI
                     treeView1.SelectedNode = treeView1.Nodes[0];
                     treeView1.Nodes[0].EnsureVisible();
                 }
-
             }
         }
 
@@ -656,7 +616,6 @@ namespace SlskTransferStatsUI
                     treeView1.SelectedNode = treeView1.Nodes[0];
                     treeView1.Nodes[0].EnsureVisible();
                 }
-
             }
         }
 
@@ -676,7 +635,6 @@ namespace SlskTransferStatsUI
                     treeView1.SelectedNode = treeView1.Nodes[0];
                     treeView1.Nodes[0].EnsureVisible();
                 }
-
             }
         }
 
@@ -696,14 +654,12 @@ namespace SlskTransferStatsUI
                     treeView1.SelectedNode = treeView1.Nodes[0];
                     treeView1.Nodes[0].EnsureVisible();
                 }
-
             }
         }
 
         //remove selected button
         private void button7_Click(object sender, EventArgs e)
         {
-
             var confirmResult = MessageBox.Show("Are you sure to delete this item?","Confirm Remove",MessageBoxButtons.YesNo);
 
             if (confirmResult == DialogResult.Yes)
@@ -721,27 +677,22 @@ namespace SlskTransferStatsUI
                 //if the selection is a folder
                 for (int i = 0; i < folders.Count; i++)
                 {
-
                     if (folders[i].Path == selectedNodeText)
                     {                                               
-
                         List<int> toRemove = new List<int>();
 
                         for(int j = 0; j < users[index].DownloadList.Count; j++)
                         {
-
                             string newPath = users[index].DownloadList[j].Path.Substring(0, users[index].DownloadList[j].Path.LastIndexOf("\\"));
 
                             if (newPath == selectedNodeText)
                             {                               
                                 toRemove.Add(j);
                             }
-
                         }
 
                         if(toRemove.Count > 0)
                         {
-
                             for(int k = 0; k < toRemove.Count; k++)
                             {
                                 int removeIndex = toRemove[k] - k;
@@ -753,15 +704,11 @@ namespace SlskTransferStatsUI
                                 }
 
                                 else if(users[index].DownloadList.Count == 1){
-
                                     //Changing selected node text to fully remove user when they only have one more download to remove
                                     selectedNodeText = node.Text;
                                     break;
-
                                 }
-
                             }
-
                         }
 
                         if (File.Exists("settings.ini"))
@@ -782,16 +729,12 @@ namespace SlskTransferStatsUI
                             textBox1.Text = "Please initialize your settings";
                             textBox7.Text = "\r\nPlease initialize your settings";
                         }
-
                         break;
-
                     }
-
                 }
 
                 for (int j = 0; j < users[index].DownloadList.Count; j++)
                 {
-
                     string newPath = users[index].DownloadList[j].Path.Substring(0, users[index].DownloadList[j].Path.LastIndexOf("\\"));
 
                     if (users[index].DownloadList[j].Filename == selectedNodeText && users[index].DownloadList.Count > 1)
@@ -818,18 +761,15 @@ namespace SlskTransferStatsUI
                             textBox1.Text = "Please initialize your settings";
                             textBox7.Text = "\r\nPlease initialize your settings";
                         }
-
                         break;
                     }
                     else if (users[index].DownloadList.Count == 1)
                     {
-
                         //Changing selected node text to fully remove user when they only have one more download to remove
                         selectedNodeText = node.Text;
                         break;
 
                     }
-
                 }
 
                 //if section is a user completly remove the user
@@ -857,20 +797,14 @@ namespace SlskTransferStatsUI
                             textBox1.Text = "Please initialize your settings";
                             textBox7.Text = "\r\nPlease initialize your settings";
                         }
-
                         break;
                     }
-
                 }    
-
             }
-
         }
-
 
         private int getSongDownloadNum(string songName)
         {
-
             List<string> allDownloads = new List<string>();
             int count = 0;
 
@@ -889,16 +823,12 @@ namespace SlskTransferStatsUI
                     count++;
                 }
             }
-
-
             return count;
-
         }
 
         //Detect enter key for searching
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Enter && textBox3.Text != "")
             {
                 string searchText = this.textBox3.Text;
@@ -909,9 +839,7 @@ namespace SlskTransferStatsUI
 
                 e.Handled = true;
                 e.SuppressKeyPress = true;
-
             }
-
         }
 
         //Function to scrable names in the tree. useful for taking screenshots
@@ -964,12 +892,10 @@ namespace SlskTransferStatsUI
                     textBox5.AppendText(Globals.SlskFolders[i] + "\r\n");
                 }
             }
-
         }
 
         public RichTextBox[] ParseData()
         {
-            //Open files TODO: change test2 and get rid of parser file or change
             FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
             FileStream fs2 = new FileStream("parsedData.txt", FileMode.Create, FileAccess.Write);
             StreamReader sr = new StreamReader(fs);
@@ -987,7 +913,7 @@ namespace SlskTransferStatsUI
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
             }
-            SlskTransferStats slsk = new SlskTransferStats();
+
             string drive = "";
             string str = sr.ReadLine();
             string queued;
@@ -995,8 +921,6 @@ namespace SlskTransferStatsUI
             string username;
             string path;
             string date;
-            string wasText = "";
-            int lineEndIndex;
             int index;
             bool added;
             long size;
@@ -1027,7 +951,6 @@ namespace SlskTransferStatsUI
                     poop += 1;
                     if (str.IndexOf("Queued", dateLength + 5, 6) == dateLength + 5)
                     {
-
                         username = queued.Substring(dateLength + 28, queued.Length - (dateLength + 28));
                         username = username.Substring(0, username.LastIndexOf(" for file @"));
 
@@ -1052,7 +975,6 @@ namespace SlskTransferStatsUI
                             }
                             //add drive to path
                             path = drive + path;
-
                             filename = queued.Substring(queued.LastIndexOf("\\") + 1);
 
                             if (File.Exists(path))
@@ -1108,9 +1030,6 @@ namespace SlskTransferStatsUI
                                 }
                             }
                             path = drive + path;
-
-
-
                             filename = queued.Substring(queued.LastIndexOf("\\") + 1);
 
                             if (File.Exists(path))
@@ -1124,21 +1043,17 @@ namespace SlskTransferStatsUI
                                 //Console.WriteLine(path);
                             }
 
-
                             date = queued.Substring(0, queued.IndexOf("]") + 1);
-
                             added = false;
 
                             //check if file is already in their downloads
                             for (int i = 0; i < users[index].DownloadList.Count; i++)
                             {
-
                                 if (users[index].DownloadList[i].Filename == filename && users[index].DownloadList[i].Date == date)
                                 {
                                     added = true;
                                     break;
                                 }
-
                             }
 
                             //if not added, add it to their downloads list
@@ -1174,18 +1089,14 @@ namespace SlskTransferStatsUI
 
                                 filesAdded += 1;
                             }
-
                         }
-
                     }
-
                 }
 
                 str = sr.ReadLine();
                 poop += 1;
                 //Console.WriteLine(poop);
             }
-
 
             Console.WriteLine("DONE");
 
@@ -1250,21 +1161,15 @@ namespace SlskTransferStatsUI
             string output;
             string lastDate;
 
-
             //Get folder information from the database TODO: remove the parser file output
             for (int i = 0; i < users.Count; i++)
             {
-
-
                 sw.WriteLine("User: " + users[i].Username + ", Number of downloads: " + users[i].DownloadNum + ", " +
                              "Last Download: " + users[i].LastDate + ", Total download size: " + users[i].TotalDownloadSize +
                              " kb" + "\n\n\tUsers Downloads:\n");
 
-
-
                 for (int j = 0; j < users[i].DownloadList.Count; j++)
                 {
-
                     folder = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
                     foldername = folder.Substring(folder.LastIndexOf("\\") + 1);
 
@@ -1275,7 +1180,6 @@ namespace SlskTransferStatsUI
 
                     if (j == 0 || (users[i].DownloadList[j - 1].Path.Substring(0, users[i].DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
                     {
-
                         if (folders.Count == 0)
                         {
 
@@ -1294,32 +1198,19 @@ namespace SlskTransferStatsUI
                                     folderDL = true;
                                     break;
                                 }
-
                             }
 
                             if (folderDL == false)
                             {
-
                                 folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
-
-
                             }
-
-
                         }
-
                         folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
                         sw.WriteLine("\t" + folder + "\tTotal folder download count: " + folders[folderIndex].DownloadNum);
-
-
                     }
-
-
                     sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " kb ");
-
                 }
                 sw.WriteLine("\n");
-
             }
 
             //removes duplicated in the folder list caused by slsk sometimes giving fully lowercased filepaths in the log file
@@ -1374,7 +1265,6 @@ namespace SlskTransferStatsUI
                             }
 
                             folders[i].DownloadNum += folders[j].DownloadNum;
-
                         }
                         else
                         {
@@ -1382,7 +1272,6 @@ namespace SlskTransferStatsUI
                             folders[i].LatestUser = folders[j].LatestUser;
                             folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
                         }
-
                     }
                 }
             }
@@ -1406,20 +1295,17 @@ namespace SlskTransferStatsUI
             return textBoxReturn;
         }
 
-
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
 
         }
     }
-
     //Global variables
     public static class Globals
     {
         public static String UserDataFile;
         public static List<string> SlskFolders = new List<string>();
         public static bool initSettings;
-
     }
 
     public class FileNum
@@ -1427,12 +1313,10 @@ namespace SlskTransferStatsUI
         public string Filename { get; set; }
         public int DownloadNum { get; set; }
         
-
         public FileNum(string filename, int downloadNum)
         {
             Filename = filename;
             DownloadNum = downloadNum;
-
         }
     }
 
@@ -1469,7 +1353,6 @@ namespace SlskTransferStatsUI
             Date = date;
         }
     }
-
     public class Person
     {
         public string Username { get; set; }
@@ -1485,8 +1368,6 @@ namespace SlskTransferStatsUI
             TotalDownloadSize = totalDownloadSize;
             DownloadList = downloadlist;
             LastDate = lastDate;
-       
-
         }
         //Converts the LastDate to a time format which can be parsed
         public DateTime convertDate(string date)
@@ -1499,36 +1380,26 @@ namespace SlskTransferStatsUI
             date = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
 
             //Try to parse date for known cultural formats
-
             if (DateTime.TryParse(date, out ParsedDate))
             {
                 return ParsedDate;
             }
-            
             //Error if datestring not found
             MessageBox.Show("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
             System.Diagnostics.Process.Start("https://github.com/mrusse/Slsk-Upload-Stats-Tracker/issues");
             throw new NotSupportedException("Given datestring is in a format that is not supported. Please report it to the github page with your transfer queue.");
         }
-        
-
-
     }
 
     //Main parsing class (if called it will add new data to the database and rebuild the folder stats from that database)
     public class Program
     {
-
         [STAThread]
         static void Main()
         {
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new SlskTransferStats());
-
         }
-
     }
-
 }
