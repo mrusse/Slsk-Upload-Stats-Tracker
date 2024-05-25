@@ -78,6 +78,7 @@ namespace SlskTransferStatsUI
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -567,6 +568,7 @@ namespace SlskTransferStatsUI
             // 
             this.DataInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
             this.DataInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DataInput.Controls.Add(this.progressBar1);
             this.DataInput.Controls.Add(this.richTextBox6);
             this.DataInput.Controls.Add(this.richTextBox3);
             this.DataInput.Controls.Add(this.button2);
@@ -607,7 +609,7 @@ namespace SlskTransferStatsUI
             this.richTextBox3.Location = new System.Drawing.Point(930, 209);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(609, 562);
+            this.richTextBox3.Size = new System.Drawing.Size(609, 529);
             this.richTextBox3.TabIndex = 6;
             this.richTextBox3.Text = "";
             this.richTextBox3.WordWrap = false;
@@ -795,7 +797,18 @@ namespace SlskTransferStatsUI
             // 
             // backgroundWorker1
             // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(930, 748);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(609, 23);
+            this.progressBar1.TabIndex = 8;
             // 
             // SlskTransferStats
             // 
@@ -880,6 +893,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.RichTextBox richTextBox5;
         private System.Windows.Forms.RichTextBox richTextBox6;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

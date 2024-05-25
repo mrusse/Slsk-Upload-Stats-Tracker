@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SlskTransferStatsUI
 {
@@ -232,6 +234,11 @@ namespace SlskTransferStatsUI
                 label15.Text = "";
 
             }
+            if (progressBar1.Value > 0)
+            {
+                progressBar1.Value = progressBar1.Maximum;
+            }
+
             treeView1.SelectedNode = treeView1.Nodes[0];
             treeView1.Nodes[0].EnsureVisible();
             treeView1.EndUpdate();
@@ -278,14 +285,19 @@ namespace SlskTransferStatsUI
             File.WriteAllText("parsingData.txt", textBox1.Text);
             richTextBox6.Rtf = "";
             richTextBox3.Text = "";
+
+
+            int extra = (int)Math.Round(textBox1.Lines.Count() * 0.2);
+            progressBar1.Minimum = 1;
+            progressBar1.Maximum = textBox1.Lines.Count() + extra;
+            progressBar1.Value = 1;
+            progressBar1.Step = 1;
+
             textBox1.Text = "";
             if (File.Exists("settings.ini"))
             {
                 textBox1.Text = "";
-                RichTextBox[] textBoxes = ParseData();
-                richTextBox6.Rtf = textBoxes[1].Rtf;
-                richTextBox3.Rtf = textBoxes[0].Rtf;
-                loadTree();
+                ParseData();
             }
             else
             {
@@ -300,6 +312,8 @@ namespace SlskTransferStatsUI
         {
             richTextBox3.Rtf = "";
             richTextBox6.Rtf = "";
+            progressBar1.Minimum = 0;
+            progressBar1.Value = 0;
         }
 
         //These variables are for searching  source: "https://stackoverflow.com/questions/11530643/treeview-search" 
@@ -713,7 +727,6 @@ namespace SlskTransferStatsUI
 
                         if (File.Exists("settings.ini"))
                         {
-                            textBox1.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
@@ -721,7 +734,6 @@ namespace SlskTransferStatsUI
                             string output = JsonConvert.SerializeObject(users);
                             System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
                             ParseData();
-                            loadTree();
                         }
                         else
                         {
@@ -747,13 +759,11 @@ namespace SlskTransferStatsUI
 
                         if (File.Exists("settings.ini"))
                         {
-                            textBox1.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
                             }
                             ParseData();
-                            loadTree();
                         }
                         else
                         {
@@ -783,13 +793,11 @@ namespace SlskTransferStatsUI
 
                         if (File.Exists("settings.ini"))
                         {
-                            textBox1.Text = "";
                             if (File.Exists("parsingData.txt"))
                             {
                                 File.Delete("parsingData.txt");
                             }
                             ParseData();
-                            loadTree();
                         }
                         else
                         {
@@ -860,14 +868,12 @@ namespace SlskTransferStatsUI
         {
             if (File.Exists("settings.ini"))
             {
-                textBox1.Text = "";
                 if (File.Exists("parsingData.txt"))
                 {
                     File.Delete("parsingData.txt");
                 }
 
                 ParseData();
-                loadTree();
                 checkBox1.Checked = false;
             }
             else
@@ -894,7 +900,16 @@ namespace SlskTransferStatsUI
             }
         }
 
-        public RichTextBox[] ParseData()
+        public void ParseData()
+        {
+            if (backgroundWorker1.IsBusy != true)
+            {
+                // Start the asynchronous operation.
+                backgroundWorker1.RunWorkerAsync();
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
             FileStream fs2 = new FileStream("parsedData.txt", FileMode.Create, FileAccess.Write);
@@ -932,11 +947,8 @@ namespace SlskTransferStatsUI
             RichTextBox info = new RichTextBox();
             RichTextBox stats = new RichTextBox();
             int dateLength;
-            int poop = 0;
             string[] dateSplit;
             List<string> oldUserList = new List<string>();
-
-            Console.WriteLine("START");
 
             //loop through file made by input data
             while (str != null)
@@ -948,7 +960,7 @@ namespace SlskTransferStatsUI
                 {
                     queued = str;
                     str = sr.ReadLine();
-                    poop += 1;
+                    backgroundWorker1.ReportProgress(1,false);
                     if (str.IndexOf("Queued", dateLength + 5, 6) == dateLength + 5)
                     {
                         username = queued.Substring(dateLength + 28, queued.Length - (dateLength + 28));
@@ -969,7 +981,6 @@ namespace SlskTransferStatsUI
                                 if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                 {
                                     drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                    //Console.WriteLine(drive);
                                     break;
                                 }
                             }
@@ -1025,7 +1036,6 @@ namespace SlskTransferStatsUI
                                 if (path.Contains(localPath) || path.Contains(localPath.ToLower()))
                                 {
                                     drive = Globals.SlskFolders[i].Substring(0, Globals.SlskFolders[i].LastIndexOf("\\"));
-                                    //Console.WriteLine(drive);
                                     break;
                                 }
                             }
@@ -1035,12 +1045,10 @@ namespace SlskTransferStatsUI
                             if (File.Exists(path))
                             {
                                 size = new FileInfo(path).Length / 1000;
-                                totalSize += size;
                             }
                             else
                             {
                                 size = 0;
-                                //Console.WriteLine(path);
                             }
 
                             date = queued.Substring(0, queued.IndexOf("]") + 1);
@@ -1065,6 +1073,8 @@ namespace SlskTransferStatsUI
                                                           users[index].TotalDownloadSize += size,
                                                           users[index].DownloadList[users[index].DownloadList.Count - 1].Date,
                                                           users[index].DownloadList);
+
+                                totalSize += size;
 
                                 //Check if user has been added to the text box already
                                 if (oldUserList.IndexOf(username) == -1)
@@ -1094,11 +1104,8 @@ namespace SlskTransferStatsUI
                 }
 
                 str = sr.ReadLine();
-                poop += 1;
-                //Console.WriteLine(poop);
+                backgroundWorker1.ReportProgress(1,false);
             }
-
-            Console.WriteLine("DONE");
 
             if (oldUserCount != 0 || newUserCount != 0)
             {
@@ -1246,9 +1253,9 @@ namespace SlskTransferStatsUI
                                 date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
                                 date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
                             }
-                            catch (Exception e)
+                            catch (Exception x)
                             {
-                                //Console.WriteLine(e.Message);
+                                //Console.WriteLine(x.Message);
                                 //Console.WriteLine(folders[i].LastTimeDownloaded);
                                 //Console.WriteLine(folders[j].LastTimeDownloaded);
                             }
@@ -1291,15 +1298,25 @@ namespace SlskTransferStatsUI
             fs2.Close();
 
             //retuirn info for output box
-            RichTextBox[] textBoxReturn = { info, stats };
-            return textBoxReturn;
+            String[] textBoxReturn = { info.Rtf, stats.Rtf };
+            e.Result = textBoxReturn;
         }
 
-        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            progressBar1.PerformStep();
+        }
 
+        private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            String[] result = (String[])e.Result;
+            richTextBox3.Rtf = result[0];
+            richTextBox6.Rtf = result[1];
+            Application.DoEvents();
+            loadTree();
         }
     }
+
     //Global variables
     public static class Globals
     {
