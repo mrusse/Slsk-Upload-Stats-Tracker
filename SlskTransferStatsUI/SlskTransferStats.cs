@@ -289,8 +289,10 @@ namespace SlskTransferStatsUI
             File.WriteAllText("parsingData.txt", textBox1.Text);
             richTextBox6.Rtf = "";
             richTextBox3.Text = "";
+            textBox1.Text = "";
             if (File.Exists("settings.ini"))
             {
+                textBox1.Text = "";
                 RichTextBox[] textBoxes = ParseData();
                 richTextBox6.Rtf = textBoxes[1].Rtf;
                 richTextBox3.Rtf = textBoxes[0].Rtf;
@@ -522,12 +524,6 @@ namespace SlskTransferStatsUI
 
             }
 
-        }
-
-        public string TextBox1
-        {
-            get { return textBox1.Text; }
-            set { textBox1.Text = value; }
         }
 
         //"Database save location: " button in settings (opens a folder pick dialog)
