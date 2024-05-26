@@ -151,9 +151,6 @@ namespace SlskTransferStatsUI
                 //folder stats
                 folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
 
-                richTextBox1.Text = "";
-                textBox9.Text = "";
-
                 List<string> inFolderList = new List<string>
                 {
                     folders[0].Path
@@ -161,22 +158,19 @@ namespace SlskTransferStatsUI
 
                 int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
                 string newPath = folders[0].Path.Substring(0, index + 1);
-                richTextBox1.AppendText(newPath + "...\\" + folders[0].Foldername + ":\r\n");
-                textBox9.AppendText(folders[0].DownloadNum.ToString() + "\r\n");
 
                 bool inFolder = false;
 
                 int max;
-                if (folders.Count > 35)
+                if (folders.Count > 100)
                 {
-                    max = 35;
+                    max = 100;
                 }
                 else
                 {
                     max = folders.Count;
                 }
 
-                richTextBox1.Text = "";
 
                 for (int i = 0; i < max; i++)
                 {
@@ -198,18 +192,22 @@ namespace SlskTransferStatsUI
 
                         if (checkBox6.Checked)
                         {
-                            richTextBox1.AppendText(folders[i].Path + "\r\n");
+                            string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
+
                             Globals.topFolders.Add(folders[i].Path);
                         }
                         else
                         {
-                            richTextBox1.AppendText(newPath + "\r\n");
+                            string[] row = { newPath, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
+
                             Globals.topFolders.Add(folders[i].Path);
                         }
-
-                        textBox9.AppendText(folders[i].DownloadNum.ToString() + "\r\n");
+                        listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
                     }
-
                 }
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
             }
@@ -219,17 +217,15 @@ namespace SlskTransferStatsUI
                 input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
 
-                //Top 10 users stat
+                //Top users stat
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
-                richTextBox2.Text = "";
                 richTextBox4.Text = "";
-                richTextBox5.Text = "";
 
                 int max;
 
-                if (users.Count > 28)
+                if (users.Count > 100)
                 {
-                    max = 28;
+                    max = 100;
                 }
                 else
                 {
@@ -240,14 +236,13 @@ namespace SlskTransferStatsUI
                 {
                     decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
                     userDownload = Decimal.Divide(userDownload, 1000000);
-                    richTextBox2.AppendText(users[i].Username + ":\r\n");
-                    richTextBox5.AppendText((userDownload).ToString("#.###") + " GB\r\n");
+
+                    string[] row = { users[i].Username, (userDownload).ToString("#.###") + " GB" };
+                    ListViewItem item = new ListViewItem(row);
+                    listView2.Items.Add(item);
                 }
 
-                //Right justify user download size list
-                richTextBox5.SelectAll();
-                richTextBox5.SelectionAlignment = HorizontalAlignment.Right;
-                richTextBox5.DeselectAll();
+                listView2.Columns[0].Width = listView2.Width - listView2.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
 
                 //last user to download stat
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
@@ -775,6 +770,8 @@ namespace SlskTransferStatsUI
                 {
                     button3.Text = "Next";
                 }
+
+                CurrentNodeMatches[0].EnsureVisible();
             }
 
             if (LastNodeIndex >= 0 && CurrentNodeMatches.Count > 0 && LastNodeIndex < CurrentNodeMatches.Count)
@@ -784,7 +781,9 @@ namespace SlskTransferStatsUI
                 LastNodeIndex++;
                 this.treeView1.SelectedNode = selectedNode;
                 this.treeView1.SelectedNode.Expand();
-                this.treeView1.Select();              
+                this.treeView1.Select();
+
+                selectedNode.EnsureVisible();
 
             }
 
@@ -1363,12 +1362,11 @@ namespace SlskTransferStatsUI
 
         private void button10_Click(object sender, EventArgs e)
         {
-            int index = richTextBox1.SelectionStart;
-            int line = richTextBox1.GetLineFromCharIndex(index);
+            int index = listView1.SelectedItems[0].Index;
 
             try
             {
-                Process.Start(Globals.topFolders[line]);
+                Process.Start(Globals.topFolders[index]);
             }
             catch (Exception ex)
             {
@@ -1395,6 +1393,21 @@ namespace SlskTransferStatsUI
                         Process.Start(path);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string selected = listView2.SelectedItems[0].Text;
+                tabControl1.SelectedIndex = 1;
+                Application.DoEvents();
+                Search(selected);
             }
             catch (Exception ex)
             {
