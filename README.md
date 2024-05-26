@@ -1,5 +1,9 @@
 # SlskQt-Upload-Stats-Tracker
 A utility to track, save, and view stats on your soulseek uploads.
+
+# ♪ Feature Showcase ♪
+https://github.com/mrusse/Slsk-Upload-Stats-Tracker/assets/38119333/e8b278cb-017d-4846-afd2-4d37c337cffb
+
 # Main stats menu
 NOTE: all usernames and data in these screenshots are either randomly generated or censored for privacy
 
