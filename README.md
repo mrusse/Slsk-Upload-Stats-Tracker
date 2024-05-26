@@ -2,18 +2,18 @@
 A utility to track, save, and view stats on your soulseek uploads.
 
 # ♪ Feature Showcase ♪
-https://github.com/mrusse/Slsk-Upload-Stats-Tracker/assets/38119333/e8b278cb-017d-4846-afd2-4d37c337cffb
+https://github.com/mrusse/Slsk-Upload-Stats-Tracker/assets/38119333/ed5915b9-a877-4b02-8f7e-651e10eea81d
 
 # Main stats menu
 NOTE: all usernames and data in these screenshots are either randomly generated or censored for privacy
 
 From the main menu you can see a variety of general stats such as your upload totals and top users (by download size).
 
-![main menu](https://i.imgur.com/73Iptz0.png)
+![main menu](https://i.imgur.com/YajqlwQ.png)
 
 You can also view your top downloaded folders.
 
-![main menu folder stats](https://i.imgur.com/qlTC7e3.png)
+![main menu folder stats](https://i.imgur.com/KR3a4DB.png)
 
 # User stats
 
