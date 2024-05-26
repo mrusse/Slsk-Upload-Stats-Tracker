@@ -63,8 +63,6 @@ namespace SlskTransferStatsUI
 
                 //Load tree (this does not call the parser for folder information, that only happens on the database button click)
                 LoadTree();
-
-                //ScrambleNames();
             }
             else
             {
@@ -1309,7 +1307,7 @@ namespace SlskTransferStatsUI
             }
             
             string output = JsonConvert.SerializeObject(users);
-            System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
+            File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
         }
 
