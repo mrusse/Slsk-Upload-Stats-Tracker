@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics;
 
 namespace SlskTransferStatsUI
 {
@@ -31,8 +32,17 @@ namespace SlskTransferStatsUI
                 StreamReader sr = new StreamReader(fs);
 
                 string str = sr.ReadLine();
-
                 Globals.UserDataFile = str;
+
+                str = sr.ReadLine();
+                if(str == "True")
+                {
+                    checkBox6.Checked = true;
+                }
+                else
+                {
+                    checkBox6.Checked = false;
+                }
 
                 while (str != null)
                 {
@@ -53,6 +63,8 @@ namespace SlskTransferStatsUI
 
                 //Load tree (this does not call the parser for folder information, that only happens on the database button click)
                 LoadTree();
+
+                //ScrambleNames();
             }
             else
             {
@@ -166,18 +178,17 @@ namespace SlskTransferStatsUI
                     max = folders.Count;
                 }
 
-                for (int i = 1; i < max; i++)
+                richTextBox1.Text = "";
+
+                for (int i = 0; i < max; i++)
                 {
-                    //Console.WriteLine(folders[i].Path);
                     inFolder = false;
                     for (int j = 0; j < inFolderList.Count; j++)
                     {
-                        //Console.WriteLine("| " + j + " | " + inFolderList[j]);
                         if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
                         {
-                            //Console.WriteLine(folders[i].Path + " " + inFolderList[j]);
                             inFolder = true;
-                            i++;
+                            max++;
                             break;
                         }
                     }
@@ -185,13 +196,22 @@ namespace SlskTransferStatsUI
                     if (inFolder == false)
                     {
                         inFolderList.Add(folders[i].Path);
+                        newPath = folders[i].Path.Split('\\').Last();
 
-                        index = folders[i].Path.IndexOf("\\", folders[i].Path.IndexOf("\\") + 1);
-                        newPath = folders[i].Path.Substring(0, index + 1);
+                        if (checkBox6.Checked)
+                        {
+                            richTextBox1.AppendText(folders[i].Path + "\r\n");
+                            Globals.topFolders.Add(folders[i].Path);
+                        }
+                        else
+                        {
+                            richTextBox1.AppendText(newPath + "\r\n");
+                            Globals.topFolders.Add(folders[i].Path);
+                        }
 
-                        richTextBox1.AppendText(newPath + "...\\" + folders[i].Foldername + "\r\n");
                         textBox9.AppendText(folders[i].DownloadNum.ToString() + "\r\n");
                     }
+
                 }
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
             }
@@ -783,14 +803,29 @@ namespace SlskTransferStatsUI
         {
             while (StartNode != null)
             {
+                Person user = users.Find(i => i.Username == StartNode.Text);
+
                 if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
                 {
                     CurrentNodeMatches.Add(StartNode);
                 }
-                if (StartNode.Nodes.Count != 0)
+
+                foreach (Download download in user.DownloadList)
                 {
-                    SearchNodes(SearchText, StartNode.Nodes[0]);//Recursive Search 
+                    if (download.Filename.ToLower().Contains(SearchText.ToLower()))
+                    {
+                        StartNode.ExpandAll();
+                        foreach(TreeNode node in StartNode.Nodes)
+                        {
+                            if (download.Path.Remove(download.Path.LastIndexOf('\\')) == node.Text)
+                            {
+                                CurrentNodeMatches.Add(node);
+                            }
+                        }
+                        
+                    }
                 }
+
                 StartNode = StartNode.NextNode;
             }
         }
@@ -968,18 +1003,19 @@ namespace SlskTransferStatsUI
             {
                 File.Delete("settings.ini");
             }
-            System.IO.File.WriteAllText(@"settings.ini", Globals.UserDataFile + Environment.NewLine);
+
+            File.WriteAllText(@"settings.ini", Globals.UserDataFile + Environment.NewLine + checkBox6.Checked.ToString() + Environment.NewLine);
             if (Globals.SlskFolders.Count != 0)
             {
                 for (int i = 0; i < Globals.SlskFolders.Count; i++)
                 {
                     if (i != Globals.SlskFolders.Count - 1)
                     {
-                        System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i] + Environment.NewLine);
+                        File.AppendAllText(@"settings.ini", Globals.SlskFolders[i] + Environment.NewLine);
                     }
                     else
                     {
-                        System.IO.File.AppendAllText(@"settings.ini", Globals.SlskFolders[i]);
+                        File.AppendAllText(@"settings.ini", Globals.SlskFolders[i]);
                     }
                     textBox1.Text = "";
                     textBox4.Text = "";
@@ -1282,6 +1318,13 @@ namespace SlskTransferStatsUI
                     File.Delete("parsingData.txt");
                 }
 
+                textBox3.Text = "";
+                label15.Text = "";
+                LastSearchText = "";
+                button3.Text = "Search";
+                CurrentNodeMatches.Clear();
+                LastNodeIndex = 0;
+
                 ParseData();
                 checkBox1.Checked = false;
             }
@@ -1314,6 +1357,21 @@ namespace SlskTransferStatsUI
             progressBar1.Minimum = 0;
             progressBar1.Value = 0;
         }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            int index = richTextBox1.SelectionStart;
+            int line = richTextBox1.GetLineFromCharIndex(index);
+
+            try
+            {
+                Process.Start(Globals.topFolders[line]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 
     //Global variables
@@ -1322,6 +1380,7 @@ namespace SlskTransferStatsUI
         public static String UserDataFile;
         public static List<string> SlskFolders = new List<string>();
         public static bool initSettings;
+        public static List<string> topFolders = new List<string>();
     }
 
     public class FileNum

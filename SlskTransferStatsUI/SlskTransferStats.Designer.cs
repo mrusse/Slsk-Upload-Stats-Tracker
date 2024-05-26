@@ -71,6 +71,8 @@ namespace SlskTransferStatsUI
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
+            this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.button9 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -79,6 +81,7 @@ namespace SlskTransferStatsUI
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.button10 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -202,6 +205,7 @@ namespace SlskTransferStatsUI
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.tabPage2.Controls.Add(this.button10);
             this.tabPage2.Controls.Add(this.richTextBox1);
             this.tabPage2.Controls.Add(this.textBox9);
             this.tabPage2.Controls.Add(this.label14);
@@ -216,13 +220,13 @@ namespace SlskTransferStatsUI
             // 
             this.richTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.ForeColor = System.Drawing.Color.White;
             this.richTextBox1.Location = new System.Drawing.Point(31, 122);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
-            this.richTextBox1.Size = new System.Drawing.Size(418, 760);
+            this.richTextBox1.Size = new System.Drawing.Size(418, 701);
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             this.richTextBox1.WordWrap = false;
@@ -238,7 +242,7 @@ namespace SlskTransferStatsUI
             this.textBox9.Multiline = true;
             this.textBox9.Name = "textBox9";
             this.textBox9.ReadOnly = true;
-            this.textBox9.Size = new System.Drawing.Size(68, 760);
+            this.textBox9.Size = new System.Drawing.Size(68, 701);
             this.textBox9.TabIndex = 12;
             this.textBox9.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -702,6 +706,8 @@ namespace SlskTransferStatsUI
             // Settings
             // 
             this.Settings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
+            this.Settings.Controls.Add(this.label8);
+            this.Settings.Controls.Add(this.checkBox6);
             this.Settings.Controls.Add(this.button9);
             this.Settings.Controls.Add(this.button6);
             this.Settings.Controls.Add(this.label4);
@@ -715,6 +721,29 @@ namespace SlskTransferStatsUI
             this.Settings.Size = new System.Drawing.Size(1558, 968);
             this.Settings.TabIndex = 4;
             this.Settings.Text = "Settings";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold);
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(457, 151);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(193, 22);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Folder stats options:";
+            // 
+            // checkBox6
+            // 
+            this.checkBox6.AutoSize = true;
+            this.checkBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox6.ForeColor = System.Drawing.Color.White;
+            this.checkBox6.Location = new System.Drawing.Point(461, 196);
+            this.checkBox6.Name = "checkBox6";
+            this.checkBox6.Size = new System.Drawing.Size(133, 24);
+            this.checkBox6.TabIndex = 14;
+            this.checkBox6.Text = "Show full path";
+            this.checkBox6.UseVisualStyleBackColor = true;
             // 
             // button9
             // 
@@ -731,9 +760,10 @@ namespace SlskTransferStatsUI
             // 
             // button6
             // 
+            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button6.ForeColor = System.Drawing.Color.Firebrick;
-            this.button6.Location = new System.Drawing.Point(461, 171);
+            this.button6.Location = new System.Drawing.Point(1316, 903);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(216, 34);
             this.button6.TabIndex = 12;
@@ -810,6 +840,19 @@ namespace SlskTransferStatsUI
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // button10
+            // 
+            this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.button10.ForeColor = System.Drawing.Color.White;
+            this.button10.Location = new System.Drawing.Point(177, 845);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(207, 34);
+            this.button10.TabIndex = 19;
+            this.button10.Text = "Open Selected Folder";
+            this.button10.UseVisualStyleBackColor = false;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // SlskTransferStats
             // 
@@ -895,6 +938,9 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.RichTextBox richTextBox6;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.CheckBox checkBox6;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button10;
     }
 }
 
