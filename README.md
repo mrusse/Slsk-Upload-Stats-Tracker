@@ -1,15 +1,19 @@
 # SlskQt-Upload-Stats-Tracker
 A utility to track, save, and view stats on your soulseek uploads.
+
+# ♪ Feature Showcase ♪
+https://github.com/mrusse/Slsk-Upload-Stats-Tracker/assets/38119333/e8b278cb-017d-4846-afd2-4d37c337cffb
+
 # Main stats menu
 NOTE: all usernames and data in these screenshots are either randomly generated or censored for privacy
 
 From the main menu you can see a variety of general stats such as your upload totals and top users (by download size).
 
-![main menu](https://i.imgur.com/S11LrMI.png)
+![main menu](https://i.imgur.com/73Iptz0.png)
 
 You can also view your top downloaded folders.
 
-![main menu folder stats](https://i.imgur.com/GEi2qkj.png)
+![main menu folder stats](https://i.imgur.com/qlTC7e3.png)
 
 # User stats
 
@@ -23,7 +27,7 @@ Anything you select in the database (users, folders, or files) will show stats a
 item in the top right. Tracked stats are things like: number of times a folder or file has been downloaded, last user to download a folder,
 added up total size in kilobytes of a user's downloads, and much more.
 
-![user stats page](https://i.imgur.com/AyAXMbJ.png)
+![user stats page](https://i.imgur.com/ho9hkV0.png)
 
 # How to add data and start using the program
 
@@ -33,7 +37,7 @@ of all the folders you are sharing in soulseek. Once you have selected your desi
 and added all the same folders that you are sharing in soulseek you can clik the "Save settings" button.
 Here's an example of my settings page.
 
-![settings page](https://i.imgur.com/GTWwqzn.png)
+![settings page](https://i.imgur.com/b5waD3g.png)
 
 Now for adding some data. You first need to enable "Show diagnostics" in the SoulseekQT settings
 under "Options" > "UI"
@@ -51,11 +55,11 @@ Simply select all with "Ctrl-A" and copy with "Ctrl-C"
 
 You can then paste this data into the "Input" text box on the "Data Input" tab of the stats tracking program.
 
-![slsk settings](https://i.imgur.com/i0PjbCz.png)
+![slsk settings](https://i.imgur.com/q4tbN2S.png)
 
 Once the data has been pasted you can click the "Submit to database" button and it will find any new upload data that is not already in your database.
 
-![slsk settings](https://i.imgur.com/L8VLpGw.png)
+![slsk settings](https://i.imgur.com/4eSF5ak.png)
 
 After adding new data it will be stored permanently in the stats tracking program. You don't need to worry about losing your upload data.
 
