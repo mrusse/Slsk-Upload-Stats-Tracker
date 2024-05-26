@@ -37,6 +37,7 @@ namespace SlskTransferStatsUI
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button10 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.textBox9 = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -81,7 +82,7 @@ namespace SlskTransferStatsUI
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -216,6 +217,19 @@ namespace SlskTransferStatsUI
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Folders";
             // 
+            // button10
+            // 
+            this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.button10.ForeColor = System.Drawing.Color.White;
+            this.button10.Location = new System.Drawing.Point(177, 848);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(207, 34);
+            this.button10.TabIndex = 19;
+            this.button10.Text = "Open Selected Folder";
+            this.button10.UseVisualStyleBackColor = false;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // richTextBox1
             // 
             this.richTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
@@ -337,6 +351,7 @@ namespace SlskTransferStatsUI
             // UserStats
             // 
             this.UserStats.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
+            this.UserStats.Controls.Add(this.button11);
             this.UserStats.Controls.Add(this.button8);
             this.UserStats.Controls.Add(this.label15);
             this.UserStats.Controls.Add(this.button7);
@@ -364,9 +379,9 @@ namespace SlskTransferStatsUI
             this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button8.ForeColor = System.Drawing.Color.White;
-            this.button8.Location = new System.Drawing.Point(1152, 621);
+            this.button8.Location = new System.Drawing.Point(1238, 621);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(168, 34);
+            this.button8.Size = new System.Drawing.Size(123, 34);
             this.button8.TabIndex = 18;
             this.button8.Text = "Refresh Tree";
             this.button8.UseVisualStyleBackColor = false;
@@ -389,7 +404,7 @@ namespace SlskTransferStatsUI
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button7.ForeColor = System.Drawing.Color.Firebrick;
-            this.button7.Location = new System.Drawing.Point(1357, 621);
+            this.button7.Location = new System.Drawing.Point(1375, 621);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(168, 34);
             this.button7.TabIndex = 16;
@@ -475,7 +490,7 @@ namespace SlskTransferStatsUI
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox1.ForeColor = System.Drawing.Color.White;
-            this.checkBox1.Location = new System.Drawing.Point(1013, 628);
+            this.checkBox1.Location = new System.Drawing.Point(1255, 488);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(103, 24);
             this.checkBox1.TabIndex = 9;
@@ -841,18 +856,19 @@ namespace SlskTransferStatsUI
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
-            // button10
+            // button11
             // 
-            this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
-            this.button10.ForeColor = System.Drawing.Color.White;
-            this.button10.Location = new System.Drawing.Point(177, 845);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(207, 34);
-            this.button10.TabIndex = 19;
-            this.button10.Text = "Open Selected Folder";
-            this.button10.UseVisualStyleBackColor = false;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
+            this.button11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.button11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button11.ForeColor = System.Drawing.Color.White;
+            this.button11.Location = new System.Drawing.Point(1009, 621);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(214, 34);
+            this.button11.TabIndex = 19;
+            this.button11.Text = "Open Selected Folder/File";
+            this.button11.UseVisualStyleBackColor = false;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // SlskTransferStats
             // 
@@ -941,6 +957,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.CheckBox checkBox6;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
     }
 }
 

@@ -819,10 +819,15 @@ namespace SlskTransferStatsUI
                         {
                             if (download.Path.Remove(download.Path.LastIndexOf('\\')) == node.Text)
                             {
-                                CurrentNodeMatches.Add(node);
+                                foreach(TreeNode node2 in node.Nodes)
+                                {
+                                    if (node2.Text.ToLower().Contains(SearchText.ToLower()) && !CurrentNodeMatches.Contains(node2))
+                                    {
+                                        CurrentNodeMatches.Add(node2);
+                                    }
+                                }
                             }
                         }
-                        
                     }
                 }
 
@@ -942,7 +947,7 @@ namespace SlskTransferStatsUI
                         textBox4.AppendText("Filename: " + users[index].DownloadList[i].Filename + 
                                             "\r\n\r\nFile size: " + downloadString +
                                             "\r\n\r\nNumber of times downloaded: " + downloadCount +
-                                            "\r\n\r\nDate downloaded: " + lastDate +
+                                            "\r\n\r\nDate downloaded: " + lastDate.Replace("]", "") +
                                             "\r\n\r\nFile path: " + users[index].DownloadList[i].Path);
                         break;
                     }
@@ -1366,6 +1371,32 @@ namespace SlskTransferStatsUI
             try
             {
                 Process.Start(Globals.topFolders[line]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            TreeNode selected = treeView1.SelectedNode;
+            try
+            {
+                if (selected.Parent != null)
+                {
+                    if(selected.Nodes.Count > 0)
+                    {
+      
+                        Process.Start(selected.Text);
+
+                    }
+                    else
+                    {
+                        string path = selected.Parent.Text + "\\" + selected.Text;
+                        Process.Start(path);
+                    }
+                }
             }
             catch (Exception ex)
             {
