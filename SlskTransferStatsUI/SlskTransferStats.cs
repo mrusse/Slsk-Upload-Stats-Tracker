@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Diagnostics;
 
 namespace SlskTransferStatsUI
@@ -734,7 +733,11 @@ namespace SlskTransferStatsUI
         {
             richTextBox3.Rtf = "";
             richTextBox6.Rtf = "";
-            progressBar1.Value = 1;
+            if(progressBar1.Value >= progressBar1.Maximum)
+            {
+                progressBar1.Minimum = 0;
+                progressBar1.Value = 0;
+            }
         }
 
         //These variables are for searching  source: "https://stackoverflow.com/questions/11530643/treeview-search" 
@@ -1356,8 +1359,11 @@ namespace SlskTransferStatsUI
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            progressBar1.Minimum = 0;
-            progressBar1.Value = 0;
+            if (progressBar1.Value >= progressBar1.Maximum)
+            {
+                progressBar1.Minimum = 0;
+                progressBar1.Value = 0;
+            }
         }
 
         private void button10_Click(object sender, EventArgs e)
