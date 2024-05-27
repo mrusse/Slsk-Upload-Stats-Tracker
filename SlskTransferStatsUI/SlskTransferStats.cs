@@ -150,10 +150,7 @@ namespace SlskTransferStatsUI
                 //folder stats
                 folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
 
-                List<string> inFolderList = new List<string>
-                {
-                    folders[0].Path
-                };
+                List<string> inFolderList = new List<string>{};
 
                 int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
                 string newPath = folders[0].Path.Substring(0, index + 1);
@@ -170,16 +167,21 @@ namespace SlskTransferStatsUI
                     max = folders.Count;
                 }
 
-
                 for (int i = 0; i < max; i++)
                 {
                     inFolder = false;
                     for (int j = 0; j < inFolderList.Count; j++)
                     {
+
                         if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
                         {
                             inFolder = true;
-                            max++;
+
+                            if(j + 1 != max && i+1 !=max)
+                            {
+                                max++;
+                            }
+
                             break;
                         }
                     }
@@ -302,9 +304,13 @@ namespace SlskTransferStatsUI
                 //search text
                 label15.Text = "";
             }
-            treeView1.SelectedNode = treeView1.Nodes[0];
-            treeView1.Nodes[0].EnsureVisible();
-            treeView1.EndUpdate();
+
+            if (treeView1.GetNodeCount(false) > 0)
+            {
+                treeView1.SelectedNode = treeView1.Nodes[0];
+                treeView1.Nodes[0].EnsureVisible();
+                treeView1.EndUpdate();
+            }
 
             //I used this at one point not sure if its used anymore lol
             return users;
@@ -370,6 +376,12 @@ namespace SlskTransferStatsUI
                 {
                     queued = str;
                     str = sr.ReadLine();
+
+                    if(str == null)
+                    {
+                        break;
+                    }
+
                     backgroundWorker1.ReportProgress(1);
                     if (str.IndexOf("Queued", dateLength + 5, 6) == dateLength + 5)
                     {
