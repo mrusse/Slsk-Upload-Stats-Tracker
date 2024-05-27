@@ -34,7 +34,7 @@ added up total size in kilobytes of a user's downloads, and much more.
 The first thing you need to do when launching the program for the first time is initialize your settings.
 You need to choose a place to save the database that will be built as well as add the location
 of all the folders you are sharing in soulseek. Once you have selected your desired save location
-and added all the same folders that you are sharing in soulseek you can clik the "Save settings" button.
+and added all the same folders that you are sharing in soulseek you can click the "Save settings" button.
 Here's an example of my settings page.
 
 ![settings page](https://i.imgur.com/b5waD3g.png)
