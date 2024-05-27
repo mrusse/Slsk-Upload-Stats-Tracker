@@ -707,10 +707,10 @@ namespace SlskTransferStatsUI
 
             //sort and save database
             users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-            output = JsonConvert.SerializeObject(users);
+            output = JsonConvert.SerializeObject(users, Formatting.Indented);
             File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
-            output = JsonConvert.SerializeObject(folders);
+            output = JsonConvert.SerializeObject(folders, Formatting.Indented);
             File.WriteAllText(@Globals.UserDataFile + "\\fileData.txt", output);
 
             sr.Close();
@@ -1192,7 +1192,7 @@ namespace SlskTransferStatsUI
                             {
                                 File.Delete("parsingData.txt");
                             }
-                            string output = JsonConvert.SerializeObject(users);
+                            string output = JsonConvert.SerializeObject(users, Formatting.Indented);
                             System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                             ParseData();
@@ -1216,7 +1216,7 @@ namespace SlskTransferStatsUI
                         users[index].DownloadList.RemoveAt(j);
                         users[index].DownloadNum -= 1;
 
-                        string output = JsonConvert.SerializeObject(users);
+                        string output = JsonConvert.SerializeObject(users, Formatting.Indented);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                         if (File.Exists("settings.ini"))
@@ -1250,7 +1250,7 @@ namespace SlskTransferStatsUI
                     if (selectedNodeText == users[i].Username)
                     {
                         users.RemoveAt(i);
-                        string output = JsonConvert.SerializeObject(users);
+                        string output = JsonConvert.SerializeObject(users, Formatting.Indented);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                         if (File.Exists("settings.ini"))
@@ -1320,7 +1320,7 @@ namespace SlskTransferStatsUI
                 users[i].Username = new string((users[i].Username).ToCharArray().OrderBy(x => Guid.NewGuid()).ToArray());
             }
             
-            string output = JsonConvert.SerializeObject(users);
+            string output = JsonConvert.SerializeObject(users, Formatting.Indented);
             File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
         }
