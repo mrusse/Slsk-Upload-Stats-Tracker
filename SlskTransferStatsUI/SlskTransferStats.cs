@@ -133,187 +133,13 @@ namespace SlskTransferStatsUI
             }
         }
 
-
-        public List<Person> LoadTree()
+        public void LoadTree()
         {
-            string input;
-
-            //Clear nodes so their are no dupes
-            treeView1.Nodes.Clear();
-
-            //Load data files (dont parse if they dont exist)
-            if (File.Exists(Globals.UserDataFile + "\\fileData.txt"))
+            if (backgroundWorker2.IsBusy != true)
             {
-                input = File.ReadAllText(@Globals.UserDataFile + "\\fileData.txt");
-                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
-
-                //folder stats
-                folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
-
-                List<string> inFolderList = new List<string>{};
-
-                int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
-                string newPath = folders[0].Path.Substring(0, index + 1);
-
-                bool inFolder = false;
-
-                int max;
-                if (folders.Count > 100)
-                {
-                    max = 100;
-                }
-                else
-                {
-                    max = folders.Count;
-                }
-
-                for (int i = 0; i < max; i++)
-                {
-                    inFolder = false;
-                    for (int j = 0; j < inFolderList.Count; j++)
-                    {
-
-                        if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
-                        {
-                            inFolder = true;
-
-                            if(j + 1 != max && i+1 !=max)
-                            {
-                                max++;
-                            }
-
-                            break;
-                        }
-                    }
-
-                    if (inFolder == false)
-                    {
-                        inFolderList.Add(folders[i].Path);
-                        newPath = folders[i].Path.Split('\\').Last();
-
-                        if (checkBox6.Checked)
-                        {
-                            string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
-                            ListViewItem item = new ListViewItem(row);
-                            listView1.Items.Add(item);
-
-                            Globals.topFolders.Add(folders[i].Path);
-                        }
-                        else
-                        {
-                            string[] row = { newPath, folders[i].DownloadNum.ToString() };
-                            ListViewItem item = new ListViewItem(row);
-                            listView1.Items.Add(item);
-
-                            Globals.topFolders.Add(folders[i].Path);
-                        }
-                        listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
-                    }
-                }
-                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
+                // Start the asynchronous operation.
+                backgroundWorker2.RunWorkerAsync();
             }
-
-            if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
-            {
-                input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
-                users = JsonConvert.DeserializeObject<List<Person>>(input);
-
-                //Top users stat
-                users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
-                richTextBox4.Text = "";
-
-                int max;
-
-                if (users.Count > 100)
-                {
-                    max = 100;
-                }
-                else
-                {
-                    max = users.Count;
-                }
-
-                for (int i = 0; i < max; i++)
-                {
-                    decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
-                    userDownload = Decimal.Divide(userDownload, 1000000);
-
-                    string[] row = { users[i].Username, (userDownload).ToString("#.###") + " GB" };
-                    ListViewItem item = new ListViewItem(row);
-                    listView2.Items.Add(item);
-                }
-
-                listView2.Columns[0].Width = listView2.Width - listView2.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
-
-                //last user to download stat
-                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-                string lastuser = "Last user to download: " + users[users.Count - 1].Username;
-
-                //last user to download stat
-                string lastDate = users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date
-                                                        .Substring(1, users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date.Length - 2);
-
-                string[] dateSplit = lastDate.Split();
-                lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-                lastDate = "Last upload date: " + lastDate;
-
-                //Number of users stat
-                if (checkBox2.Checked == true)
-                {
-                    users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
-                }
-
-                if (checkBox3.Checked == true)
-                {
-                    users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
-                }
-
-                if (checkBox4.Checked == true)
-                {
-                    users.Sort((x, y) => x.Username.CompareTo(y.Username));
-                }
-
-                if (checkBox5.Checked == true)
-                {
-                    users.Sort((x, y) => DateTime.Compare(y.convertDate(y.LastDate), x.convertDate(x.LastDate)));
-                }
-
-                treeView1.BeginUpdate();
-                long totalDownloadSize = 0;
-                int downloadCount = 0;
-
-                //Actual tree building
-                for (int i = 0; i < users.Count; i++)
-                {
-                    totalDownloadSize += users[i].TotalDownloadSize;
-                    downloadCount += users[i].DownloadNum;
-
-                    //parent node
-                    treeView1.Nodes.Add(users[i].Username);
-                    treeView1.Nodes[i].Nodes.Add("");
-                }
-
-                //General stats textbox
-                richTextBox4.AppendText("Number of users: " + users.Count + "\r\n\r\n\r\nFiles uploaded: " + downloadCount + "\r\n\r\n\r\n" + lastuser + "\r\n\r\n\r\n" + lastDate);
-
-                //total upload stat
-                decimal totalDlDecimal = Convert.ToDecimal(totalDownloadSize);
-                totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
-                textBox7.Text = "\r\n" + (totalDlDecimal).ToString("#.##") + " GB";
-
-                //search text
-                label15.Text = "";
-            }
-
-            if (treeView1.GetNodeCount(false) > 0)
-            {
-                treeView1.SelectedNode = treeView1.Nodes[0];
-                treeView1.Nodes[0].EnsureVisible();
-                treeView1.EndUpdate();
-            }
-
-            //I used this at one point not sure if its used anymore lol
-            return users;
         }
 
         public void ParseData()
@@ -738,6 +564,216 @@ namespace SlskTransferStatsUI
             richTextBox6.Rtf = result[1];
             progressBar1.Value = progressBar1.Maximum;
             Application.DoEvents();
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string input;
+
+            //Clear nodes so their are no dupes
+            treeView1.Invoke(new Action(() => {
+                treeView1.Nodes.Clear();
+            }));
+
+            //Load data files (dont parse if they dont exist)
+            if (File.Exists(Globals.UserDataFile + "\\fileData.txt"))
+            {
+                input = File.ReadAllText(@Globals.UserDataFile + "\\fileData.txt");
+                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
+
+                //folder stats
+                folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
+
+                List<string> inFolderList = new List<string> { };
+
+                int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
+                string newPath = folders[0].Path.Substring(0, index + 1);
+
+                bool inFolder = false;
+
+                int max;
+                if (folders.Count > 100)
+                {
+                    max = 100;
+                }
+                else
+                {
+                    max = folders.Count;
+                }
+
+                for (int i = 0; i < max; i++)
+                {
+                    inFolder = false;
+                    for (int j = 0; j < inFolderList.Count; j++)
+                    {
+
+                        if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
+                        {
+                            inFolder = true;
+
+                            if (j + 1 != max && i + 1 != max)
+                            {
+                                max++;
+                            }
+
+                            break;
+                        }
+                    }
+
+                    if (inFolder == false)
+                    {
+                        inFolderList.Add(folders[i].Path);
+                        newPath = folders[i].Path.Split('\\').Last();
+
+                        if (checkBox6.Checked)
+                        {
+                            string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
+
+                            Globals.topFolders.Add(folders[i].Path);
+                        }
+                        else
+                        {
+                            string[] row = { newPath, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
+
+                            Globals.topFolders.Add(folders[i].Path);
+                        }
+                        listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+                    }
+                }
+                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
+            }
+
+            if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
+            {
+                input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
+                users = JsonConvert.DeserializeObject<List<Person>>(input);
+
+                //Top users stat
+                users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
+
+                richTextBox4.Invoke(new Action(() => {
+                    richTextBox4.Text = "";
+                }));
+
+                int max;
+
+                if (users.Count > 100)
+                {
+                    max = 100;
+                }
+                else
+                {
+                    max = users.Count;
+                }
+
+                for (int i = 0; i < max; i++)
+                {
+                    decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
+                    userDownload = Decimal.Divide(userDownload, 1000000);
+
+                    string[] row = { users[i].Username, (userDownload).ToString("#.###") + " GB" };
+                    ListViewItem item = new ListViewItem(row);
+
+                    listView2.Invoke(new Action(() => {
+                        listView2.Items.Add(item);
+                    }));
+                }
+
+                listView2.Invoke(new Action(() => {
+                    listView2.Columns[0].Width = listView2.Width - listView2.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+                }));
+
+                //last user to download stat
+                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
+                string lastuser = "Last user to download: " + users[users.Count - 1].Username;
+
+                //last user to download stat
+                string lastDate = users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date
+                                                        .Substring(1, users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date.Length - 2);
+
+                string[] dateSplit = lastDate.Split();
+                lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
+                lastDate = "Last upload date: " + lastDate;
+
+                //Number of users stat
+                if (checkBox2.Checked == true)
+                {
+                    users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
+                }
+
+                if (checkBox3.Checked == true)
+                {
+                    users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
+                }
+
+                if (checkBox4.Checked == true)
+                {
+                    users.Sort((x, y) => x.Username.CompareTo(y.Username));
+                }
+
+                if (checkBox5.Checked == true)
+                {
+                    users.Sort((x, y) => DateTime.Compare(y.convertDate(y.LastDate), x.convertDate(x.LastDate)));
+                }
+
+                long totalDownloadSize = 0;
+                int downloadCount = 0;
+                Console.WriteLine("Start");
+                for (int i = 0; i < users.Count; i++)
+                {
+                    totalDownloadSize += users[i].TotalDownloadSize;
+                    downloadCount += users[i].DownloadNum;
+                }
+
+                Console.WriteLine("END");
+
+                //General stats textbox
+                richTextBox4.Invoke(new Action(() => {
+                    richTextBox4.AppendText("Number of users: " + users.Count + "\r\n\r\n\r\nFiles uploaded: " + downloadCount + "\r\n\r\n\r\n" + lastuser + "\r\n\r\n\r\n" + lastDate);
+                }));
+
+                //total upload stat
+                decimal totalDlDecimal = Convert.ToDecimal(totalDownloadSize);
+                totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
+
+                textBox7.Invoke(new Action(() => {
+                    textBox7.Text = "\r\n" + (totalDlDecimal).ToString("#.##") + " GB";
+                }));
+
+                //search text
+                label15.Invoke(new Action(() => {
+                    label15.Text = "";
+                }));
+
+                Console.WriteLine("Start");
+
+                treeView1.Invoke(new Action(() => {
+                    treeView1.BeginUpdate();
+                    //Actual tree building
+                    for (int i = 0; i < users.Count; i++)
+                    {
+                        //parent node
+                        treeView1.Nodes.Add(users[i].Username);
+                        treeView1.Nodes[i].Nodes.Add("");
+                    }
+                    treeView1.EndUpdate();
+                }));
+            }
+
+        }
+
+        private void backgroundWorker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Console.WriteLine("END");
         }
 
         //"Clear output" button
@@ -1432,6 +1468,7 @@ namespace SlskTransferStatsUI
                 Console.WriteLine(ex.Message);
             }
         }
+
     }
 
     //Global variables
