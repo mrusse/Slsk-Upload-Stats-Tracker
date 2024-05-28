@@ -25,6 +25,17 @@ namespace SlskTransferStatsUI
             //Only load the tree if settings exist TODO: tell the user to set their settings
             if (File.Exists("settings.ini"))
             {
+                Globals.stopwatch = Stopwatch.StartNew();
+                Globals.loading = true;
+
+                progressBar2.Visible = true;
+                progressBar2.Maximum = 0;
+                progressBar2.Minimum = 0;
+
+                panel1.BringToFront();
+                tabControl1.SelectedIndex = 1;
+                
+
                 //Read settings
                 textBox1.Text = "";
                 FileStream fs = new FileStream("settings.ini", FileMode.Open, FileAccess.Read);
@@ -652,6 +663,8 @@ namespace SlskTransferStatsUI
                 input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
 
+                TreeNode[] temp = new TreeNode[users.Count];
+
                 //Top users stat
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
 
@@ -722,14 +735,12 @@ namespace SlskTransferStatsUI
 
                 long totalDownloadSize = 0;
                 int downloadCount = 0;
-                Console.WriteLine("Start");
+
                 for (int i = 0; i < users.Count; i++)
                 {
                     totalDownloadSize += users[i].TotalDownloadSize;
                     downloadCount += users[i].DownloadNum;
                 }
-
-                Console.WriteLine("END");
 
                 //General stats textbox
                 richTextBox4.Invoke(new Action(() => {
@@ -749,31 +760,49 @@ namespace SlskTransferStatsUI
                     label15.Text = "";
                 }));
 
-                Console.WriteLine("Start");
-
-                treeView1.Invoke(new Action(() => {
-                    treeView1.BeginUpdate();
-                    //Actual tree building
-                    for (int i = 0; i < users.Count; i++)
-                    {
-                        //parent node
-                        treeView1.Nodes.Add(users[i].Username);
-                        treeView1.Nodes[i].Nodes.Add("");
-                    }
-                    treeView1.EndUpdate();
-                }));
+                //Actual tree building
+                for (int i = 0; i < users.Count; i++)
+                {
+                    backgroundWorker2.ReportProgress(1,users.Count);
+                    //parent node
+                    TreeNode node = new TreeNode(users[i].Username);
+                    node.Nodes.Add("");
+                    temp[i] = node;
+                }
+                e.Result = temp;
             }
-
+            
         }
 
         private void backgroundWorker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            if (progressBar2.Maximum == 0)
+            {
+                int userCount = (int)e.UserState;
+                progressBar2.Minimum = 1;
+                progressBar2.Maximum = userCount;
+                progressBar2.Value = 1;
+            }
+            progressBar2.PerformStep();
         }
 
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Console.WriteLine("END");
+            if((TreeNode[])e.Result != null)
+            {
+                treeView1.Nodes.AddRange((TreeNode[])e.Result);
+            }
+
+            panel1.SendToBack();
+
+            if (Globals.loading)
+            {
+                Globals.loading = false;
+                progressBar2.Visible = false;
+                tabControl1.SelectedIndex = 0;
+                Globals.stopwatch.Stop();
+                Console.WriteLine("Loading took: " + Globals.stopwatch.Elapsed.ToString(@"mm\:ss\.fff"));
+            } 
         }
 
         //"Clear output" button
@@ -1468,16 +1497,18 @@ namespace SlskTransferStatsUI
                 Console.WriteLine(ex.Message);
             }
         }
-
     }
 
     //Global variables
     public static class Globals
     {
+        public static bool initSettings;
+        public static bool loading;
         public static String UserDataFile;
         public static List<string> SlskFolders = new List<string>();
-        public static bool initSettings;
         public static List<string> topFolders = new List<string>();
+
+        public static Stopwatch stopwatch;
     }
 
     public class FileNum
