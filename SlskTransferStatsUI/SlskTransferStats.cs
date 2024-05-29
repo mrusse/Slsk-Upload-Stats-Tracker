@@ -112,27 +112,30 @@ namespace SlskTransferStatsUI
         //"Submit to database" button click event (writes text to file and parses it, then adds to database)
         private void button1_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("parsingData.txt", textBox1.Text);
-            richTextBox6.Rtf = "";
-            richTextBox3.Text = "";
-
-            int extra = (int)Math.Round(textBox1.Lines.Count() * 0.05);
-            progressBar1.Minimum = 1;
-            progressBar1.Maximum = textBox1.Lines.Count() + extra;
-            progressBar1.Value = 1;
-            progressBar1.Step = 1;
-
-            textBox1.Text = "";
-            if (File.Exists("settings.ini"))
+            if(textBox1.Text.Contains("Queued") && textBox1.Text.Contains("Queue upload"))
             {
+                File.WriteAllText("parsingData.txt", textBox1.Text);
+                richTextBox6.Rtf = "";
+                richTextBox3.Text = "";
+
+                int extra = (int)Math.Round(textBox1.Lines.Count() * 0.05);
+                progressBar1.Minimum = 1;
+                progressBar1.Maximum = textBox1.Lines.Count() + extra;
+                progressBar1.Value = 1;
+                progressBar1.Step = 1;
+
                 textBox1.Text = "";
-                ParseData();
-            }
-            else
-            {
-                textBox4.Text = "Please initialize your settings";
-                textBox1.Text = "Please initialize your settings";
-                textBox7.Text = "\r\nPlease initialize your settings";
+                if (File.Exists("settings.ini"))
+                {
+                    textBox1.Text = "";
+                    ParseData();
+                }
+                else
+                {
+                    textBox4.Text = "Please initialize your settings";
+                    textBox1.Text = "Please initialize your settings";
+                    textBox7.Text = "\r\nPlease initialize your settings";
+                }
             }
         }
 
