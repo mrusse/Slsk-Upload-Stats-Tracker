@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Diagnostics;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SlskTransferStatsUI
 {
@@ -22,7 +23,7 @@ namespace SlskTransferStatsUI
         {
             Icon = new Icon("icon.ico");
             string version = Convert.ToString(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-            Form.ActiveForm.Text = "Soulseek Upload Stats " + version.Substring(0, version.Length - 2);
+            Form.ActiveForm.Text = "Soulseek Upload Stats v" + version.Substring(0, version.Length - 2);
 
             //Only load the tree if settings exist TODO: tell the user to set their settings
             if (File.Exists("settings.ini"))
@@ -594,6 +595,11 @@ namespace SlskTransferStatsUI
 
                 List<string> inFolderList = new List<string> { };
 
+                listView1.Invoke(new Action(() =>
+                {
+                    listView1.Items.Clear();
+                }));
+
                 int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
                 string newPath = folders[0].Path.Substring(0, index + 1);
 
@@ -635,21 +641,30 @@ namespace SlskTransferStatsUI
 
                         if (checkBox6.Checked)
                         {
-                            string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
-                            ListViewItem item = new ListViewItem(row);
-                            listView1.Items.Add(item);
+                            listView1.Invoke(new Action(() => {
+                                string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
+                                ListViewItem item = new ListViewItem(row);
+                                listView1.Items.Add(item);
 
-                            Globals.topFolders.Add(folders[i].Path);
+                                Globals.topFolders.Add(folders[i].Path);
+                            }));
                         }
                         else
                         {
-                            string[] row = { newPath, folders[i].DownloadNum.ToString() };
-                            ListViewItem item = new ListViewItem(row);
-                            listView1.Items.Add(item);
+                            listView1.Invoke(new Action(() =>
+                            {
+                                string[] row = { newPath, folders[i].DownloadNum.ToString() };
+                                ListViewItem item = new ListViewItem(row);
+                                listView1.Items.Add(item);
 
-                            Globals.topFolders.Add(folders[i].Path);
+                                Globals.topFolders.Add(folders[i].Path);
+                            }));
                         }
-                        listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+
+                        listView1.Invoke(new Action(() =>
+                        {
+                            listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+                        }));
                     }
                 }
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
@@ -679,6 +694,7 @@ namespace SlskTransferStatsUI
                 }
 
                 listView2.Invoke(new Action(() => {
+                    listView2.Items.Clear();
                     listView2.Visible = false;
                 }));
 
