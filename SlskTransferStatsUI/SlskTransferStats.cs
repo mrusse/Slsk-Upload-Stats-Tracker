@@ -21,6 +21,8 @@ namespace SlskTransferStatsUI
         private void Form1_Load(object sender, EventArgs e)
         {
             Icon = new Icon("icon.ico");
+            string version = Convert.ToString(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            Form.ActiveForm.Text = "Soulseek Upload Stats " + version.Substring(0, version.Length - 2);
 
             //Only load the tree if settings exist TODO: tell the user to set their settings
             if (File.Exists("settings.ini"))
