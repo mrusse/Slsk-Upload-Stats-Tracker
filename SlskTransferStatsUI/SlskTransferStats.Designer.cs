@@ -65,7 +65,6 @@ namespace SlskTransferStatsUI
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.label7 = new System.Windows.Forms.Label();
             this.DataInput = new System.Windows.Forms.TabPage();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -88,9 +87,7 @@ namespace SlskTransferStatsUI
             this.button4 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -101,7 +98,6 @@ namespace SlskTransferStatsUI
             this.UserStats.SuspendLayout();
             this.DataInput.SuspendLayout();
             this.Settings.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -251,7 +247,7 @@ namespace SlskTransferStatsUI
             this.listView1.MaximumSize = new System.Drawing.Size(500, 2000);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(500, 738);
+            this.listView1.Size = new System.Drawing.Size(500, 747);
             this.listView1.TabIndex = 20;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -272,7 +268,7 @@ namespace SlskTransferStatsUI
             this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button10.ForeColor = System.Drawing.Color.White;
-            this.button10.Location = new System.Drawing.Point(175, 868);
+            this.button10.Location = new System.Drawing.Point(175, 877);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(207, 34);
             this.button10.TabIndex = 19;
@@ -386,7 +382,6 @@ namespace SlskTransferStatsUI
             this.UserStats.Controls.Add(this.textBox4);
             this.UserStats.Controls.Add(this.textBox3);
             this.UserStats.Controls.Add(this.button3);
-            this.UserStats.Controls.Add(this.treeView1);
             this.UserStats.Controls.Add(this.label7);
             this.UserStats.Location = new System.Drawing.Point(4, 25);
             this.UserStats.Name = "UserStats";
@@ -444,9 +439,8 @@ namespace SlskTransferStatsUI
             this.label15.ForeColor = System.Drawing.Color.White;
             this.label15.Location = new System.Drawing.Point(1009, 929);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(67, 20);
+            this.label15.Size = new System.Drawing.Size(0, 20);
             this.label15.TabIndex = 17;
-            this.label15.Text = "x results";
             // 
             // button7
             // 
@@ -597,27 +591,6 @@ namespace SlskTransferStatsUI
             this.button3.Text = "Search";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // treeView1
-            // 
-            this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
-            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeView1.ForeColor = System.Drawing.Color.White;
-            this.treeView1.HideSelection = false;
-            this.treeView1.Indent = 30;
-            this.treeView1.ItemHeight = 30;
-            this.treeView1.LineColor = System.Drawing.Color.White;
-            this.treeView1.Location = new System.Drawing.Point(16, 17);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(980, 893);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
             // label7
             // 
@@ -909,47 +882,27 @@ namespace SlskTransferStatsUI
             // 
             this.backgroundWorker2.WorkerReportsProgress = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
-            this.backgroundWorker2.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker2_ProgressChanged);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
-            // panel1
+            // treeView1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.treeView1.AllowDrop = true;
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.progressBar2);
-            this.panel1.Controls.Add(this.textBox6);
-            this.panel1.Location = new System.Drawing.Point(-3, 1);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1597, 1020);
-            this.panel1.TabIndex = 22;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
-            this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox6.ForeColor = System.Drawing.Color.White;
-            this.textBox6.Location = new System.Drawing.Point(379, 483);
-            this.textBox6.MaxLength = 0;
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(838, 55);
-            this.textBox6.TabIndex = 13;
-            this.textBox6.Text = "Loading...";
-            this.textBox6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // progressBar2
-            // 
-            this.progressBar2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar2.Location = new System.Drawing.Point(0, 997);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(1597, 23);
-            this.progressBar2.TabIndex = 14;
-            this.progressBar2.Visible = false;
+            this.treeView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeView1.ForeColor = System.Drawing.Color.White;
+            this.treeView1.HideSelection = false;
+            this.treeView1.Indent = 30;
+            this.treeView1.ItemHeight = 30;
+            this.treeView1.LineColor = System.Drawing.Color.White;
+            this.treeView1.Location = new System.Drawing.Point(30, 50);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(980, 893);
+            this.treeView1.TabIndex = 2;
+            this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // SlskTransferStats
             // 
@@ -958,7 +911,7 @@ namespace SlskTransferStatsUI
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(1590, 1022);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.treeView1);
             this.Name = "SlskTransferStats";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Soulseek Upload Stats";
@@ -980,8 +933,6 @@ namespace SlskTransferStatsUI
             this.DataInput.PerformLayout();
             this.Settings.ResumeLayout(false);
             this.Settings.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -997,7 +948,6 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.Button button1;
         public System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox4;
@@ -1047,9 +997,7 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Label label10;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
 

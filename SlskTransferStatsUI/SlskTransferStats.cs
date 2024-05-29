@@ -28,14 +28,6 @@ namespace SlskTransferStatsUI
                 Globals.stopwatch = Stopwatch.StartNew();
                 Globals.loading = true;
 
-                progressBar2.Visible = true;
-                progressBar2.Maximum = 0;
-                progressBar2.Minimum = 0;
-
-                panel1.BringToFront();
-                tabControl1.SelectedIndex = 1;
-                
-
                 //Read settings
                 textBox1.Text = "";
                 FileStream fs = new FileStream("settings.ini", FileMode.Open, FileAccess.Read);
@@ -663,8 +655,6 @@ namespace SlskTransferStatsUI
                 input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
 
-                TreeNode[] temp = new TreeNode[users.Count];
-
                 //Top users stat
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
 
@@ -683,6 +673,10 @@ namespace SlskTransferStatsUI
                     max = users.Count;
                 }
 
+                listView2.Invoke(new Action(() => {
+                    listView2.Visible = false;
+                }));
+
                 for (int i = 0; i < max; i++)
                 {
                     decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
@@ -697,6 +691,7 @@ namespace SlskTransferStatsUI
                 }
 
                 listView2.Invoke(new Action(() => {
+                    listView2.Visible = true;
                     listView2.Columns[0].Width = listView2.Width - listView2.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
                 }));
 
@@ -755,53 +750,34 @@ namespace SlskTransferStatsUI
                     textBox7.Text = "\r\n" + (totalDlDecimal).ToString("#.##") + " GB";
                 }));
 
-                //search text
-                label15.Invoke(new Action(() => {
-                    label15.Text = "";
-                }));
-
                 //Actual tree building
-                for (int i = 0; i < users.Count; i++)
-                {
-                    backgroundWorker2.ReportProgress(1,users.Count);
-                    //parent node
-                    TreeNode node = new TreeNode(users[i].Username);
-                    node.Nodes.Add("");
-                    temp[i] = node;
-                }
-                e.Result = temp;
+                treeView1.Invoke(new Action(() => {
+                    treeView1.BeginUpdate();
+                    //Actual tree building
+                    for (int i = 0; i < users.Count; i++)
+                    {
+                        //parent node
+                        treeView1.Nodes.Add(users[i].Username);
+                        treeView1.Nodes[i].Nodes.Add("");
+                    }
+                    treeView1.EndUpdate();
+                }));
             }
             
         }
 
-        private void backgroundWorker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            if (progressBar2.Maximum == 0)
-            {
-                int userCount = (int)e.UserState;
-                progressBar2.Minimum = 1;
-                progressBar2.Maximum = userCount;
-                progressBar2.Value = 1;
-            }
-            progressBar2.PerformStep();
-        }
-
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if((TreeNode[])e.Result != null)
-            {
-                treeView1.Nodes.AddRange((TreeNode[])e.Result);
-            }
-
-            panel1.SendToBack();
-
             if (Globals.loading)
             {
                 Globals.loading = false;
-                progressBar2.Visible = false;
-                tabControl1.SelectedIndex = 0;
                 Globals.stopwatch.Stop();
                 Console.WriteLine("Loading took: " + Globals.stopwatch.Elapsed.ToString(@"mm\:ss\.fff"));
+
+                if(tabControl1.SelectedIndex == 1)
+                {
+                    treeView1.BringToFront();
+                }
             } 
         }
 
@@ -817,11 +793,9 @@ namespace SlskTransferStatsUI
             }
         }
 
-        //These variables are for searching  source: "https://stackoverflow.com/questions/11530643/treeview-search" 
         private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
 
         private int LastNodeIndex = 0;
-
         private string LastSearchText;
 
         //Search button
@@ -1108,6 +1082,7 @@ namespace SlskTransferStatsUI
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
+            treeView1.BeginUpdate();
             if (checkBox1.Checked == true)
             {
                 treeView1.ExpandAll();
@@ -1118,6 +1093,7 @@ namespace SlskTransferStatsUI
                 treeView1.CollapseAll();
                 treeView1.Nodes[0].EnsureVisible();
             }
+            treeView1.EndUpdate();
         }
        
 
@@ -1440,6 +1416,15 @@ namespace SlskTransferStatsUI
             {
                 progressBar1.Minimum = 0;
                 progressBar1.Value = 0;
+            }
+
+            if(tabControl1.SelectedIndex == 1 && !Globals.loading)
+            {
+                treeView1.BringToFront();
+            }
+            else
+            {
+                treeView1.SendToBack();
             }
         }
 
