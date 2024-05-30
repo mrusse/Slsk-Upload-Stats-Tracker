@@ -591,6 +591,8 @@ namespace SlskTransferStatsUI
                 input = File.ReadAllText(@Globals.UserDataFile + "\\fileData.txt");
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
 
+                Globals.topFolders = new List<string>();
+
                 //folder stats
                 folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
                 folders = folders.GroupBy(x => (x.Path + "\\" + x.Foldername).ToLower()).Select(x => x.First()).ToList();
@@ -1443,6 +1445,9 @@ namespace SlskTransferStatsUI
         private void button10_Click(object sender, EventArgs e)
         {
             int index = listView1.SelectedItems[0].Index;
+
+            Console.WriteLine(index);
+            Console.WriteLine(Globals.topFolders[index]);
 
             try
             {
