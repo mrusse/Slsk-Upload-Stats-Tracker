@@ -387,7 +387,7 @@ namespace SlskTransferStatsUI
 
                 stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
                 stats.SelectionColor = Color.White;
-                stats.AppendText("Total size of added data: ");
+                stats.AppendText("Total size of added uploads: ");
                 stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Regular);
                 stats.SelectionColor = Color.White;
                 stats.AppendText(totalSizeString + "\r\n");
@@ -1464,16 +1464,16 @@ namespace SlskTransferStatsUI
             }
         }
 
-        private void button11_Click(object sender, EventArgs e)
+        private void openSelectedNodeFileFolder(TreeNode selected)
         {
-            TreeNode selected = treeView1.SelectedNode;
+            
             try
             {
                 if (selected.Parent != null)
                 {
-                    if(selected.Nodes.Count > 0)
+                    if (selected.Nodes.Count > 0)
                     {
-      
+
                         Process.Start(selected.Text);
 
                     }
@@ -1490,6 +1490,12 @@ namespace SlskTransferStatsUI
             }
         }
 
+        private void button11_Click(object sender, EventArgs e)
+        {
+            TreeNode selected = treeView1.SelectedNode;
+            openSelectedNodeFileFolder(selected);
+        }
+
         private void button12_Click(object sender, EventArgs e)
         {
             try
@@ -1503,6 +1509,11 @@ namespace SlskTransferStatsUI
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            openSelectedNodeFileFolder(e.Node);
         }
     }
 

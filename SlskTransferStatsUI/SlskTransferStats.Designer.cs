@@ -247,7 +247,7 @@ namespace SlskTransferStatsUI
             this.listView1.MaximumSize = new System.Drawing.Size(500, 2000);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(500, 747);
+            this.listView1.Size = new System.Drawing.Size(500, 726);
             this.listView1.TabIndex = 20;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -268,7 +268,7 @@ namespace SlskTransferStatsUI
             this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button10.ForeColor = System.Drawing.Color.White;
-            this.button10.Location = new System.Drawing.Point(175, 877);
+            this.button10.Location = new System.Drawing.Point(175, 856);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(207, 34);
             this.button10.TabIndex = 19;
@@ -586,7 +586,7 @@ namespace SlskTransferStatsUI
             this.button3.ForeColor = System.Drawing.Color.White;
             this.button3.Location = new System.Drawing.Point(859, 923);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(137, 34);
+            this.button3.Size = new System.Drawing.Size(133, 34);
             this.button3.TabIndex = 5;
             this.button3.Text = "Search";
             this.button3.UseVisualStyleBackColor = false;
@@ -897,12 +897,13 @@ namespace SlskTransferStatsUI
             this.treeView1.Indent = 30;
             this.treeView1.ItemHeight = 30;
             this.treeView1.LineColor = System.Drawing.Color.White;
-            this.treeView1.Location = new System.Drawing.Point(30, 50);
+            this.treeView1.Location = new System.Drawing.Point(28, 50);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(980, 893);
             this.treeView1.TabIndex = 2;
             this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             // 
             // SlskTransferStats
             // 
