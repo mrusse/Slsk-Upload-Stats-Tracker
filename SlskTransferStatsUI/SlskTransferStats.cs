@@ -372,17 +372,17 @@ namespace SlskTransferStatsUI
 
                 if (totalSize < 1000)
                 {
-                    totalSizeString = totalSizeDecimal.ToString("#.###") + " kb";
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " KB";
                 }
                 if (totalSize > 1000 && totalSize < 1000000)
                 {
                     totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000);
-                    totalSizeString = totalSizeDecimal.ToString("#.###") + " mb";
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " MB";
                 }
                 if (totalSize > 1000000)
                 {
                     totalSizeDecimal = Decimal.Divide(totalSizeDecimal, 1000000);
-                    totalSizeString = totalSizeDecimal.ToString("#.###") + " gb";
+                    totalSizeString = totalSizeDecimal.ToString("#.###") + " GB";
                 }
 
                 stats.SelectionFont = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
@@ -431,7 +431,7 @@ namespace SlskTransferStatsUI
             {
                 sw.WriteLine("User: " + users[i].Username + ", Number of downloads: " + users[i].DownloadNum + ", " +
                              "Last Download: " + users[i].LastDate + ", Total download size: " + users[i].TotalDownloadSize +
-                             " kb" + "\n\n\tUsers Downloads:\n");
+                             " KB" + "\n\n\tUsers Downloads:\n");
 
                 for (int j = 0; j < users[i].DownloadList.Count; j++)
                 {
@@ -473,7 +473,7 @@ namespace SlskTransferStatsUI
                         folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
                         sw.WriteLine("\t" + folder + "\tTotal folder download count: " + folders[folderIndex].DownloadNum);
                     }
-                    sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " kb ");
+                    sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " KB ");
                 }
                 sw.WriteLine("\n");
             }
@@ -593,20 +593,17 @@ namespace SlskTransferStatsUI
 
                 //folder stats
                 folders.Sort((x, y) => y.DownloadNum.CompareTo(x.DownloadNum));
-
-                List<string> inFolderList = new List<string> { };
+                folders = folders.GroupBy(x => (x.Path + "\\" + x.Foldername).ToLower()).Select(x => x.First()).ToList();
 
                 listView1.Invoke(new Action(() =>
                 {
                     listView1.Items.Clear();
                 }));
 
+                int max;
                 int index = folders[0].Path.IndexOf("\\", folders[0].Path.IndexOf("\\") + 1);
                 string newPath = folders[0].Path.Substring(0, index + 1);
 
-                bool inFolder = false;
-
-                int max;
                 if (folders.Count > 100)
                 {
                     max = 100;
@@ -618,56 +615,36 @@ namespace SlskTransferStatsUI
 
                 for (int i = 0; i < max; i++)
                 {
-                    inFolder = false;
-                    for (int j = 0; j < inFolderList.Count; j++)
+                    newPath = folders[i].Path.Split('\\').Last();
+
+                    if (checkBox6.Checked)
                     {
+                        listView1.Invoke(new Action(() => {
+                            string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
 
-                        if (folders[i].Path == inFolderList[j] || folders[i].Path.ToLower() == inFolderList[j].ToLower())
-                        {
-                            inFolder = true;
-
-                            if (j + 1 != max && i + 1 != max)
-                            {
-                                max++;
-                            }
-
-                            break;
-                        }
+                            Globals.topFolders.Add(folders[i].Path);
+                        }));
                     }
-
-                    if (inFolder == false)
+                    else
                     {
-                        inFolderList.Add(folders[i].Path);
-                        newPath = folders[i].Path.Split('\\').Last();
-
-                        if (checkBox6.Checked)
-                        {
-                            listView1.Invoke(new Action(() => {
-                                string[] row = { folders[i].Path, folders[i].DownloadNum.ToString() };
-                                ListViewItem item = new ListViewItem(row);
-                                listView1.Items.Add(item);
-
-                                Globals.topFolders.Add(folders[i].Path);
-                            }));
-                        }
-                        else
-                        {
-                            listView1.Invoke(new Action(() =>
-                            {
-                                string[] row = { newPath, folders[i].DownloadNum.ToString() };
-                                ListViewItem item = new ListViewItem(row);
-                                listView1.Items.Add(item);
-
-                                Globals.topFolders.Add(folders[i].Path);
-                            }));
-                        }
-
                         listView1.Invoke(new Action(() =>
                         {
-                            listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+                            string[] row = { newPath, folders[i].DownloadNum.ToString() };
+                            ListViewItem item = new ListViewItem(row);
+                            listView1.Items.Add(item);
+
+                            Globals.topFolders.Add(folders[i].Path);
                         }));
                     }
                 }
+
+                listView1.Invoke(new Action(() =>
+                {
+                    listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
+                }));
+
                 folders = JsonConvert.DeserializeObject<List<Folder>>(input);
             }
 
@@ -701,10 +678,23 @@ namespace SlskTransferStatsUI
 
                 for (int i = 0; i < max; i++)
                 {
+                    string[] row = new string[3];
                     decimal userDownload = Convert.ToDecimal(users[i].TotalDownloadSize);
-                    userDownload = Decimal.Divide(userDownload, 1000000);
 
-                    string[] row = { users[i].Username, (userDownload).ToString("#.###") + " GB" };
+                    if (users[i].TotalDownloadSize < 1000)
+                    {
+                        row = new string[]{ users[i].Username, (userDownload).ToString("#.###") + " KB" };
+                    }
+                    if (users[i].TotalDownloadSize > 1000 && users[i].TotalDownloadSize < 1000000)
+                    {
+                        userDownload = Decimal.Divide(userDownload, 1000);
+                        row = new string[] { users[i].Username, (userDownload).ToString("#.###") + " MB"};
+                    }
+                    if (users[i].TotalDownloadSize > 1000000)
+                    {
+                        userDownload = Decimal.Divide(userDownload, 1000000);
+                        row = new string[] { users[i].Username, (userDownload).ToString("#.###") + " GB"};
+                    }
                     ListViewItem item = new ListViewItem(row);
 
                     listView2.Invoke(new Action(() => {
@@ -926,24 +916,24 @@ namespace SlskTransferStatsUI
                     string[] dateSplit = lastDate.Split();
                     lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
 
-                    //Determine if download size is in kb, mb or gb
+                    //Determine if download size is in KB, mb or GB
 
                     string downloadString = "";
                     decimal totalDlDecimal = Convert.ToDecimal(users[i].TotalDownloadSize);
 
                     if (users[i].TotalDownloadSize < 1000)
                     {
-                        downloadString = totalDlDecimal.ToString("#.###") + " kb";
+                        downloadString = totalDlDecimal.ToString("#.###") + " KB";
                     }
                     if(users[i].TotalDownloadSize > 1000 && users[i].TotalDownloadSize < 1000000)
                     {
                         totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
-                        downloadString = totalDlDecimal.ToString("#.###") + " mb";
+                        downloadString = totalDlDecimal.ToString("#.###") + " MB";
                     }
                     if (users[i].TotalDownloadSize > 1000000)
                     {
                         totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
-                        downloadString = totalDlDecimal.ToString("#.###") + " gb";
+                        downloadString = totalDlDecimal.ToString("#.###") + " GB";
                     }
 
                     //Update text
@@ -989,24 +979,24 @@ namespace SlskTransferStatsUI
                 {
                     if (users[index].DownloadList[i].Filename == selectedNodeText)
                     {
-                        //Determine if download size is in kb, mb or gb
+                        //Determine if download size is in KB, mb or GB
 
                         string downloadString = "";
                         decimal totalDlDecimal = Convert.ToDecimal(users[index].DownloadList[i].Size);
 
                         if (users[index].DownloadList[i].Size < 1000)
                         {
-                            downloadString = totalDlDecimal.ToString("#.###") + " kb";
+                            downloadString = totalDlDecimal.ToString("#.###") + " KB";
                         }
                         if (users[index].DownloadList[i].Size > 1000 && users[index].DownloadList[i].Size < 1000000)
                         {
                             totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
-                            downloadString = totalDlDecimal.ToString("#.###") + " mb";
+                            downloadString = totalDlDecimal.ToString("#.###") + " MB";
                         }
                         if (users[index].DownloadList[i].Size > 1000000)
                         {
                             totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
-                            downloadString = totalDlDecimal.ToString("#.###") + " gb";
+                            downloadString = totalDlDecimal.ToString("#.###") + " GB";
                         }
 
                         //the classic date re arange that could be a function 
