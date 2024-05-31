@@ -21,7 +21,7 @@ namespace SlskTransferStatsUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Icon = new Icon("icon.ico");
+            Icon = Icon.ExtractAssociatedIcon(AppDomain.CurrentDomain.FriendlyName);
             string version = Convert.ToString(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
             Text = "Soulseek Upload Stats v" + version.Substring(0, version.Length - 2);

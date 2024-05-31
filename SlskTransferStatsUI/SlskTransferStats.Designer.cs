@@ -29,6 +29,7 @@ namespace SlskTransferStatsUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SlskTransferStats));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.GeneralStats = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
@@ -247,7 +248,7 @@ namespace SlskTransferStatsUI
             this.listView1.MaximumSize = new System.Drawing.Size(500, 2000);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(500, 726);
+            this.listView1.Size = new System.Drawing.Size(500, 729);
             this.listView1.TabIndex = 20;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -268,7 +269,7 @@ namespace SlskTransferStatsUI
             this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button10.ForeColor = System.Drawing.Color.White;
-            this.button10.Location = new System.Drawing.Point(175, 856);
+            this.button10.Location = new System.Drawing.Point(175, 859);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(207, 34);
             this.button10.TabIndex = 19;
@@ -913,6 +914,7 @@ namespace SlskTransferStatsUI
             this.ClientSize = new System.Drawing.Size(1590, 1022);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.treeView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SlskTransferStats";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Soulseek Upload Stats";
