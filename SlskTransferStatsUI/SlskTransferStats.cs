@@ -837,9 +837,8 @@ namespace SlskTransferStatsUI
                 if(CurrentNodeMatches.Count > 1)
                 {
                     button3.Text = "Next";
+                    CurrentNodeMatches[0].EnsureVisible();
                 }
-
-                CurrentNodeMatches[0].EnsureVisible();
             }
 
             if (LastNodeIndex >= 0 && CurrentNodeMatches.Count > 0 && LastNodeIndex < CurrentNodeMatches.Count)
