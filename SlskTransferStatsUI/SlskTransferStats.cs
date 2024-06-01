@@ -164,9 +164,7 @@ namespace SlskTransferStatsUI
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
-            FileStream fs2 = new FileStream("parsedData.txt", FileMode.Create, FileAccess.Write);
             StreamReader sr = new StreamReader(fs);
-            StreamWriter sw = new StreamWriter(fs2);
             sr.BaseStream.Seek(0, SeekOrigin.Begin);
 
             List<Person> users = new List<Person>();
@@ -429,10 +427,6 @@ namespace SlskTransferStatsUI
             //Get folder information from the database TODO: remove the parser file output
             for (int i = 0; i < users.Count; i++)
             {
-                sw.WriteLine("User: " + users[i].Username + ", Number of downloads: " + users[i].DownloadNum + ", " +
-                             "Last Download: " + users[i].LastDate + ", Total download size: " + users[i].TotalDownloadSize +
-                             " KB" + "\n\n\tUsers Downloads:\n");
-
                 for (int j = 0; j < users[i].DownloadList.Count; j++)
                 {
                     folder = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
@@ -471,11 +465,8 @@ namespace SlskTransferStatsUI
                             }
                         }
                         folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
-                        sw.WriteLine("\t" + folder + "\tTotal folder download count: " + folders[folderIndex].DownloadNum);
                     }
-                    sw.WriteLine("\t\t" + users[i].DownloadList[j].Filename + ", " + users[i].DownloadList[j].Size + " KB ");
                 }
-                sw.WriteLine("\n");
             }
 
             //removes duplicated in the folder list caused by slsk sometimes giving fully lowercased filepaths in the log file
@@ -485,57 +476,50 @@ namespace SlskTransferStatsUI
                 {
                     if ((j != i) && (folders[i].Path.ToLower() == folders[j].Path.ToLower()))
                     {
-                        if (i < j)
+
+                        //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                        if (folders[i].LastTimeDownloaded.Contains("]"))
                         {
+                            //Console.WriteLine("BUGGED SQUARE BRACKET in folders[i]" + folders[i].LastTimeDownloaded + "\n");
+                            folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
+                        }
 
-                            //TODO: fix this bug that somehow adds a square bracket in the middle of the date
-                            if (folders[i].LastTimeDownloaded.Contains("]"))
-                            {
-                                //Console.WriteLine("BUGGED SQUARE BRACKET in folders[i]" + folders[i].LastTimeDownloaded + "\n");
-                                folders[i].LastTimeDownloaded = folders[i].LastTimeDownloaded.Replace(@"]", "");
-                            }
+                        //TODO: fix this bug that somehow adds a square bracket in the middle of the date
+                        if (folders[j].LastTimeDownloaded.Contains("]"))
+                        {
+                            //Console.WriteLine("BUGGED SQUARE BRACKET in folders[j]" + folders[j].LastTimeDownloaded + "\n");
+                            folders[j].LastTimeDownloaded = folders[j].LastTimeDownloaded.Replace(@"]", "");
 
-                            //TODO: fix this bug that somehow adds a square bracket in the middle of the date
-                            if (folders[j].LastTimeDownloaded.Contains("]"))
-                            {
-                                //Console.WriteLine("BUGGED SQUARE BRACKET in folders[j]" + folders[j].LastTimeDownloaded + "\n");
-                                folders[j].LastTimeDownloaded = folders[j].LastTimeDownloaded.Replace(@"]", "");
+                        }
 
-                            }
+                        DateTime date1 = default(DateTime);
+                        DateTime date2 = default(DateTime);
 
-                            DateTime date1 = default(DateTime);
-                            DateTime date2 = default(DateTime);
+                        try
+                        {
+                            date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
+                            date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
+                        }
+                        catch (Exception x)
+                        {
+                            Console.WriteLine(x.Message);
+                            Console.WriteLine(folders[i].LastTimeDownloaded);
+                            Console.WriteLine(folders[j].LastTimeDownloaded);
+                        }
 
-                            try
-                            {
-                                date1 = DateTime.Parse(folders[i].LastTimeDownloaded);
-                                date2 = DateTime.Parse(folders[j].LastTimeDownloaded);
-                            }
-                            catch (Exception x)
-                            {
-                                Console.WriteLine(x.Message);
-                                Console.WriteLine(folders[i].LastTimeDownloaded);
-                                Console.WriteLine(folders[j].LastTimeDownloaded);
-                            }
-
-                            if (date1 >= date2)
-                            {
-                                folders[j].LatestUser = folders[i].LatestUser;
-                                folders[j].LastTimeDownloaded = folders[i].LastTimeDownloaded;
-                            }
-                            else
-                            {
-                                folders[i].LatestUser = folders[j].LatestUser;
-                                folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
-                            }
-
-                            folders[i].DownloadNum += folders[j].DownloadNum;
+                        if (date1 >= date2)
+                        {
+                            folders[j].LatestUser = folders[i].LatestUser;
+                            folders[j].LastTimeDownloaded = folders[i].LastTimeDownloaded;
+                            folders[j].DownloadNum += folders[i].DownloadNum;
+                            folders.Remove(folders[i]);
                         }
                         else
                         {
-                            folders[i].DownloadNum = folders[j].DownloadNum;
                             folders[i].LatestUser = folders[j].LatestUser;
                             folders[i].LastTimeDownloaded = folders[j].LastTimeDownloaded;
+                            folders[i].DownloadNum += folders[j].DownloadNum;
+                            folders.Remove(folders[j]);
                         }
                     }
                 }
@@ -551,9 +535,6 @@ namespace SlskTransferStatsUI
 
             sr.Close();
             fs.Close();
-            sw.Flush();
-            sw.Close();
-            fs2.Close();
 
             //retuirn info for output box
             String[] textBoxReturn = { info.Rtf, stats.Rtf };
@@ -1444,10 +1425,6 @@ namespace SlskTransferStatsUI
         private void button10_Click(object sender, EventArgs e)
         {
             int index = listView1.SelectedItems[0].Index;
-
-            Console.WriteLine(index);
-            Console.WriteLine(Globals.topFolders[index]);
-
             try
             {
                 Process.Start(Globals.topFolders[index]);
