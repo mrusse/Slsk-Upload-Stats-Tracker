@@ -7,7 +7,6 @@ using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Diagnostics;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SlskTransferStatsUI
 {
@@ -25,6 +24,13 @@ namespace SlskTransferStatsUI
             string version = Convert.ToString(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
             Text = "Soulseek Upload Stats v" + version.Substring(0, version.Length - 2);
+
+            if (File.Exists("userData.txt"))
+            {
+                tabControl1.Visible = false;
+                treeView1.Visible = false;
+                ConvertLegacyDatabase();
+            }
 
             //Only load the tree if settings exist TODO: tell the user to set their settings
             if (File.Exists("settings.ini"))
@@ -82,6 +88,81 @@ namespace SlskTransferStatsUI
         List<Person> users = new List<Person>();
         List<Folder> folders = new List<Folder>();
 
+        private void ConvertLegacyDatabase()
+        {
+            if (backgroundWorker3.IsBusy != true)
+            {
+                // Start the asynchronous operation.
+                backgroundWorker3.RunWorkerAsync();
+            }
+        }
+
+        private void backgroundWorker3_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
+            {
+                string input = File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
+                List<Person> users = JsonConvert.DeserializeObject<List<Person>>(input);
+
+                progressBar2.Invoke(new Action(() => {
+                    progressBar2.Minimum = 1;
+                    progressBar2.Maximum = users.Count;
+                    progressBar2.Value = 1;
+                    progressBar2.Step = 1;
+                }));
+
+                for (int i = 0; i < users.Count; i++)
+                {
+                    SqliteDataAccess.SaveUser(users[i]);
+
+                    for (int j = 0; j < users[i].DownloadList.Count; j++)
+                    {
+                        users[i].DownloadList[j].Username = users[i].Username;
+                        SqliteDataAccess.SaveDownload(users[i].DownloadList[j]);
+
+                        string path = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
+                        string foldername = path.Substring(path.LastIndexOf("\\") + 1);
+
+                        //Change date format
+                        string lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
+                        string[] dateSplit = lastDate.Split();
+                        lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
+
+                        if (SqliteDataAccess.CheckFolder(path.ToLower()) == 0)
+                        {
+                            Folder folder = new Folder(path, path.ToLower(), foldername, 1, users[i].Username, lastDate);
+                            SqliteDataAccess.SaveFolder(folder);
+                        }
+                        else
+                        {
+                            Folder folder = SqliteDataAccess.LoadFolder(path.ToLower());
+                            if (folder.LatestUser != users[i].Username)
+                            {
+                                folder.LatestUser = users[i].Username;
+                                folder.DownloadNum = folder.DownloadNum += 1;
+                                folder.LastTimeDownloaded = lastDate;
+
+                                SqliteDataAccess.UpdateFolder(folder);
+                            }
+                        }
+                    }
+                    backgroundWorker3.ReportProgress(1);
+                }
+            }
+        }
+
+        private void backgroundWorker3_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar2.PerformStep();
+        }
+
+        private void backgroundWorker3_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            tabControl1.Visible = true;
+            treeView1.Visible = true;
+            progressBar2.Visible = false;
+        }
+
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             if(e.Node.Parent == null)
@@ -89,7 +170,7 @@ namespace SlskTransferStatsUI
                 e.Node.Nodes.Clear();
 
                 int folderCount = -1;
-                long totalDownloadSize = 0;
+                double totalDownloadSize = 0;
                 int downloadCount = 0;
                 Person user = users.Find(i => i.Username == e.Node.Text);
 
@@ -188,8 +269,8 @@ namespace SlskTransferStatsUI
             string date;
             int index;
             bool added;
-            long size;
-            long totalSize = 0;
+            double size;
+            double totalSize = 0;
             int newUserCount = 0;
             int oldUserCount = 0;
             int filesAdded = 0;
@@ -272,7 +353,7 @@ namespace SlskTransferStatsUI
                             info.SelectionColor = Color.White;
                             info.AppendText("\": " + filename + "\r\n");
 
-                            downloads.Add(new Download(filename, path, size, date));
+                            downloads.Add(new Download(username, filename, path, size, date));
                             users.Add(new Person(username, 1, size, date, downloads));
                             oldUserList.Add(username);
                             index = users.FindIndex(person => person.Username == username);
@@ -323,9 +404,9 @@ namespace SlskTransferStatsUI
                             //if not added, add it to their downloads list
                             if (added == false)
                             {
-                                users[index].DownloadList.Add(new Download(filename, path, size, date));
+                                users[index].DownloadList.Add(new Download(username, filename, path, size, date));
                                 users[index] = new Person(username,
-                                                          users[index].DownloadNum + 1,
+                                                          (int)users[index].DownloadNum + 1,
                                                           users[index].TotalDownloadSize += size,
                                                           users[index].DownloadList[users[index].DownloadList.Count - 1].Date,
                                                           users[index].DownloadList);
@@ -442,7 +523,7 @@ namespace SlskTransferStatsUI
                         if (folders.Count == 0)
                         {
 
-                            folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
+                            folders.Add(new Folder(folder, folder.ToLower(), foldername, 1, users[i].Username, lastDate));
                         }
                         else
                         {
@@ -453,7 +534,7 @@ namespace SlskTransferStatsUI
 
                                 if (folders[k].Path == folder && (folders[k].LatestUser != users[i].Username))
                                 {
-                                    folders[k] = new Folder(folder, foldername, folders[k].DownloadNum += 1, users[i].Username, lastDate);
+                                    folders[k] = new Folder(folder, folder.ToLower(), foldername, folders[k].DownloadNum += 1, users[i].Username, lastDate);
                                     folderDL = true;
                                     break;
                                 }
@@ -461,7 +542,7 @@ namespace SlskTransferStatsUI
 
                             if (folderDL == false)
                             {
-                                folders.Add(new Folder(folder, foldername, 1, users[i].Username, lastDate));
+                                folders.Add(new Folder(folder, folder.ToLower(), foldername, 1, users[i].Username, lastDate));
                             }
                         }
                         folderIndex = folders.FindIndex(Folder => Folder.Path == folder);
@@ -636,6 +717,13 @@ namespace SlskTransferStatsUI
                 input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 users = JsonConvert.DeserializeObject<List<Person>>(input);
 
+                //for(int i = 0; i < users.Count; i++)
+                //{
+                //    SqliteDataAccess.SaveUser(users[i]);
+                //}
+
+                //users = SqliteDataAccess.LoadUsers();
+
                 //Top users stat
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
 
@@ -723,13 +811,13 @@ namespace SlskTransferStatsUI
                     users.Sort((x, y) => DateTime.Compare(y.convertDate(y.LastDate), x.convertDate(x.LastDate)));
                 }
 
-                long totalDownloadSize = 0;
+                double totalDownloadSize = 0;
                 int downloadCount = 0;
 
                 for (int i = 0; i < users.Count; i++)
                 {
                     totalDownloadSize += users[i].TotalDownloadSize;
-                    downloadCount += users[i].DownloadNum;
+                    downloadCount += (int) users[i].DownloadNum;
                 }
 
                 //General stats textbox
@@ -1514,15 +1602,30 @@ namespace SlskTransferStatsUI
 
     public class Folder
     {
+        public Int64 Id { get; set; }
         public string Path { get; set; }
+        public string PathToLower { get; set; }
         public string Foldername { get; set; }
-        public int DownloadNum { get; set; }
+        public Int64 DownloadNum { get; set; }
         public string LatestUser { get; set; }
         public string LastTimeDownloaded { get; set; }
 
-        public Folder(string path, string foldername, int downloadNum, string latestUser, string lastTimeDownloaded)
+        public Folder(Int64 id, string latestUser, string foldername, string path, string pathToLower, Int64 downloadNum, string lastTimeDownloaded)
+        {
+            Id = id;
+            Path = path;
+            PathToLower = pathToLower;
+            Foldername = foldername;
+            DownloadNum = downloadNum;
+            LatestUser = latestUser;
+            LastTimeDownloaded = lastTimeDownloaded;
+        }
+
+        [JsonConstructor]
+        public Folder(string path, string pathToLower, string foldername, Int64 downloadNum, string latestUser, string lastTimeDownloaded)
         {
             Path = path;
+            PathToLower = pathToLower;
             Foldername = foldername;
             DownloadNum = downloadNum;
             LatestUser = latestUser;
@@ -1532,13 +1635,16 @@ namespace SlskTransferStatsUI
 
     public class Download
     {
+        public int Id { get; set; }
+        public string Username { get; set; }
         public string Filename { get; set; }
         public string Path { get; set; }
-        public long Size { get; set; }
+        public double Size { get; set; }
         public string Date { get; set; }
 
-        public Download(string filename, string path, long size, string date)
+        public Download(string username, string filename, string path, double size, string date)
         {
+            Username = username;
             Filename = filename;
             Path = path;
             Size = size;
@@ -1547,13 +1653,24 @@ namespace SlskTransferStatsUI
     }
     public class Person
     {
+        public Int64 Id { get; }
         public string Username { get; set; }
-        public int DownloadNum { get; set; }
-        public long TotalDownloadSize { get; set; }
+        public Int64 DownloadNum { get; set; }
+        public double TotalDownloadSize { get; set; }
         public string LastDate { get; set; }
         public List<Download> DownloadList { get; set; }
 
-        public Person(string username, int downloadNum, long totalDownloadSize, string lastDate, List<Download> downloadlist)
+        public Person(Int64 id, string username, Int64 downloadNum, double totalDownloadSize, string lastDate)
+        {
+            Id = id;
+            Username = username;
+            DownloadNum = downloadNum;
+            TotalDownloadSize = totalDownloadSize;
+            LastDate = lastDate;
+        }
+
+        [JsonConstructor]
+        public Person(string username, Int64 downloadNum, double totalDownloadSize, string lastDate, List<Download> downloadlist)
         {
             Username = username;
             DownloadNum = downloadNum;
