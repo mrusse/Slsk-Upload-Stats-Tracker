@@ -111,7 +111,6 @@ namespace SlskTransferStatsUI
         {
             tabControl1.Visible = true;
             treeView1.Visible = true;
-            progressBar2.Visible = false;
         }
 
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
