@@ -92,7 +92,6 @@ namespace SlskTransferStatsUI
         {
             if (backgroundWorker3.IsBusy != true)
             {
-                // Start the asynchronous operation.
                 backgroundWorker3.RunWorkerAsync();
             }
         }
@@ -104,56 +103,8 @@ namespace SlskTransferStatsUI
                 string input = File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
                 List<Person> users = JsonConvert.DeserializeObject<List<Person>>(input);
 
-                progressBar2.Invoke(new Action(() => {
-                    progressBar2.Minimum = 1;
-                    progressBar2.Maximum = users.Count;
-                    progressBar2.Value = 1;
-                    progressBar2.Step = 1;
-                }));
-
-                for (int i = 0; i < users.Count; i++)
-                {
-                    SqliteDataAccess.SaveUser(users[i]);
-
-                    for (int j = 0; j < users[i].DownloadList.Count; j++)
-                    {
-                        users[i].DownloadList[j].Username = users[i].Username;
-                        SqliteDataAccess.SaveDownload(users[i].DownloadList[j]);
-
-                        string path = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
-                        string foldername = path.Substring(path.LastIndexOf("\\") + 1);
-
-                        //Change date format
-                        string lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
-                        string[] dateSplit = lastDate.Split();
-                        lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
-
-                        if (SqliteDataAccess.CheckFolder(path.ToLower()) == 0)
-                        {
-                            Folder folder = new Folder(path, path.ToLower(), foldername, 1, users[i].Username, lastDate);
-                            SqliteDataAccess.SaveFolder(folder);
-                        }
-                        else
-                        {
-                            Folder folder = SqliteDataAccess.LoadFolder(path.ToLower());
-                            if (folder.LatestUser != users[i].Username)
-                            {
-                                folder.LatestUser = users[i].Username;
-                                folder.DownloadNum = folder.DownloadNum += 1;
-                                folder.LastTimeDownloaded = lastDate;
-
-                                SqliteDataAccess.UpdateFolder(folder);
-                            }
-                        }
-                    }
-                    backgroundWorker3.ReportProgress(1);
-                }
+                SqliteDataAccess.ConvertLegacyDatabase(users);
             }
-        }
-
-        private void backgroundWorker3_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            progressBar2.PerformStep();
         }
 
         private void backgroundWorker3_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

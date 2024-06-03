@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
@@ -98,6 +99,59 @@ namespace SlskTransferStatsUI
             {
                 cnn.Execute("update Folder set DownloadNum = @DownloadNum, LatestUser = @LatestUser, LastTimeDownloaded = @LastTimeDownloaded where Path = @Path", folder);
             }
+        }
+
+        public static void ConvertLegacyDatabase(List<Person> users)
+        {
+            string connectionString = LoadConnectionString();
+            SQLiteConnection dbcon = new SQLiteConnection(connectionString);
+            dbcon.Open();
+
+            SQLiteCommand sqlComm;
+            sqlComm = new SQLiteCommand("begin", dbcon);
+            sqlComm.ExecuteNonQuery();
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                dbcon.Execute("insert into User (Username, DownloadNum, TotalDownloadSize, LastDate) values (@Username, @DownloadNum, @TotalDownloadSize, @LastDate)", users[i]);
+
+                for (int j = 0; j < users[i].DownloadList.Count; j++)
+                {
+                    users[i].DownloadList[j].Username = users[i].Username;
+                    dbcon.Execute("insert into Download (Username, Filename, Path, Size, Date) values (@Username, @Filename, @Path, @Size, @Date)", users[i].DownloadList[j]);
+
+                    string path = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
+                    string foldername = path.Substring(path.LastIndexOf("\\") + 1);
+
+                    //Change date format
+                    string lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
+                    string[] dateSplit = lastDate.Split();
+                    lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
+
+                    int count = dbcon.ExecuteScalar<int>("select count(*) from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'");
+                    if (count == 0)
+                    {
+                        Folder folder = new Folder(path, path.ToLower(), foldername, 1, users[i].Username, lastDate);
+                        dbcon.Execute("insert into Folder (Path, PathToLower, Foldername, DownloadNum, LatestUser, LastTimeDownloaded) values (@Path, @PathToLower, @Foldername, @DownloadNum, @LatestUser, @LastTimeDownloaded)", folder);
+                    }
+                    else
+                    {
+                        Folder folder = dbcon.Query<Folder>("select * from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'", new DynamicParameters()).ToList()[0];
+                        if (folder.LatestUser != users[i].Username)
+                        {
+                            folder.LatestUser = users[i].Username;
+                            folder.DownloadNum = folder.DownloadNum += 1;
+                            folder.LastTimeDownloaded = lastDate;
+
+                            dbcon.Execute("update Folder set DownloadNum = @DownloadNum, LatestUser = @LatestUser, LastTimeDownloaded = @LastTimeDownloaded where Path = @Path", folder);
+                        }
+                    }
+                }
+            }
+
+            sqlComm = new SQLiteCommand("end", dbcon);
+            sqlComm.ExecuteNonQuery();
+            dbcon.Close();
         }
 
         private static string LoadConnectionString(string id = "Default")
