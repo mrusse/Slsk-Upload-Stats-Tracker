@@ -89,7 +89,6 @@ namespace SlskTransferStatsUI
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.backgroundWorker3 = new System.ComponentModel.BackgroundWorker();
             this.tabControl1.SuspendLayout();
             this.GeneralStats.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -249,7 +248,7 @@ namespace SlskTransferStatsUI
             this.listView1.MaximumSize = new System.Drawing.Size(500, 2000);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(500, 735);
+            this.listView1.Size = new System.Drawing.Size(500, 738);
             this.listView1.TabIndex = 20;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -270,7 +269,7 @@ namespace SlskTransferStatsUI
             this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.button10.ForeColor = System.Drawing.Color.White;
-            this.button10.Location = new System.Drawing.Point(175, 865);
+            this.button10.Location = new System.Drawing.Point(175, 868);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(207, 34);
             this.button10.TabIndex = 19;
@@ -907,12 +906,6 @@ namespace SlskTransferStatsUI
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             // 
-            // backgroundWorker3
-            // 
-            this.backgroundWorker3.WorkerReportsProgress = true;
-            this.backgroundWorker3.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker3_DoWork);
-            this.backgroundWorker3.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker3_RunWorkerCompleted);
-            // 
             // SlskTransferStats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1008,7 +1001,6 @@ namespace SlskTransferStatsUI
         private System.Windows.Forms.Label label10;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
         private System.Windows.Forms.TreeView treeView1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker3;
     }
 }
 

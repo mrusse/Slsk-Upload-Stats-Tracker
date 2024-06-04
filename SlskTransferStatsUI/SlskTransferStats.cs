@@ -25,13 +25,6 @@ namespace SlskTransferStatsUI
 
             Text = "Soulseek Upload Stats v" + version.Substring(0, version.Length - 2);
 
-            if (File.Exists("userData.txt"))
-            {
-                tabControl1.Visible = false;
-                treeView1.Visible = false;
-                ConvertLegacyDatabase();
-            }
-
             //Only load the tree if settings exist TODO: tell the user to set their settings
             if (File.Exists("settings.ini"))
             {
@@ -73,6 +66,23 @@ namespace SlskTransferStatsUI
                 sr.Close();
                 fs.Close();
 
+                if (File.Exists("userData.txt"))
+                {
+                    tabControl1.Visible = false;
+                    treeView1.Visible = false;
+
+                    DialogResult dialogResult = MessageBox.Show("Legacy text based database files found. Click OK to convert to a SQLite database.", "Please Convert Database", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+
+                    if (dialogResult == DialogResult.OK)
+                    {
+                        ConvertLegacyDatabase();
+                    }
+                    else
+                    {
+                        Application.Exit();
+                    }
+                }
+
                 //Load tree (this does not call the parser for folder information, that only happens on the database button click)
                 LoadTree();
             }
@@ -90,14 +100,6 @@ namespace SlskTransferStatsUI
 
         private void ConvertLegacyDatabase()
         {
-            if (backgroundWorker3.IsBusy != true)
-            {
-                backgroundWorker3.RunWorkerAsync();
-            }
-        }
-
-        private void backgroundWorker3_DoWork(object sender, DoWorkEventArgs e)
-        {
             if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
             {
                 string input = File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
@@ -105,12 +107,16 @@ namespace SlskTransferStatsUI
 
                 SqliteDataAccess.ConvertLegacyDatabase(users);
             }
-        }
 
-        private void backgroundWorker3_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
             tabControl1.Visible = true;
             treeView1.Visible = true;
+
+            File.Move(Globals.UserDataFile + "\\userData.txt", Globals.UserDataFile + "\\legacyDatabaseBackup.txt");
+
+            if (File.Exists(Globals.UserDataFile + "\\fileData.txt"))
+            {
+                File.Delete(Globals.UserDataFile + "\\fileData.txt");
+            }
         }
 
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -192,6 +198,7 @@ namespace SlskTransferStatsUI
             }
         }
 
+        //ParseData
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             FileStream fs = new FileStream("parsingData.txt", FileMode.OpenOrCreate, FileAccess.Read);
@@ -1109,7 +1116,10 @@ namespace SlskTransferStatsUI
                     textBox4.Text = "";
                     textBox7.Text = "";
                 }
-            }     
+            }
+
+            Application.Restart();
+            Environment.Exit(0);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
