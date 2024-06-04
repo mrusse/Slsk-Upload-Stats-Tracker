@@ -83,6 +83,9 @@ namespace SlskTransferStatsUI
                     }
                 }
 
+                Globals.users = SqliteDataAccess.LoadUsers();
+                Globals.folders = SqliteDataAccess.LoadFolders();
+
                 //Load tree (this does not call the parser for folder information, that only happens on the database button click)
                 LoadTree();
             }
@@ -93,10 +96,6 @@ namespace SlskTransferStatsUI
                 textBox7.Text = "\r\nPlease initialize your settings";
             }
         }
-        
-        //Outside the class because I access them further down
-        List<Person> users = new List<Person>();
-        List<Folder> folders = new List<Folder>();
 
         private void ConvertLegacyDatabase()
         {
@@ -128,14 +127,15 @@ namespace SlskTransferStatsUI
                 int folderCount = -1;
                 double totalDownloadSize = 0;
                 int downloadCount = 0;
-                Person user = users.Find(i => i.Username == e.Node.Text);
+                Person user = Globals.users.Find(i => i.Username == e.Node.Text);
+                List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(user.Username);
 
-                for (int j = 0; j < user.DownloadList.Count; j++)
+                for (int j = 0; j < userDownloads.Count; j++)
                 {
                     //get folder
-                    string folder = user.DownloadList[j].Path.Substring(0, user.DownloadList[j].Path.LastIndexOf("\\"));
+                    string folder = userDownloads[j].Path.Substring(0, userDownloads[j].Path.LastIndexOf("\\"));
 
-                    if (j == 0 || (user.DownloadList[j - 1].Path.Substring(0, user.DownloadList[j - 1].Path.LastIndexOf("\\")) != folder))
+                    if (j == 0 || (userDownloads[j - 1].Path.Substring(0, userDownloads[j - 1].Path.LastIndexOf("\\")) != folder))
                     {
                         //first child (folders)
                         e.Node.Nodes.Add(folder);
@@ -143,8 +143,8 @@ namespace SlskTransferStatsUI
 
                     }
                     //second child (songs)
-                    e.Node.Nodes[folderCount].Nodes.Add(user.DownloadList[j].Filename);
-                    totalDownloadSize += user.DownloadList[j].Size;
+                    e.Node.Nodes[folderCount].Nodes.Add(userDownloads[j].Filename);
+                    totalDownloadSize += userDownloads[j].Size;
                     downloadCount++;
                 }
             }
@@ -184,7 +184,7 @@ namespace SlskTransferStatsUI
         {
             if (backgroundWorker2.IsBusy != true)
             {
-                // Start the asynchronous operation.
+                
                 backgroundWorker2.RunWorkerAsync();
             }
         }
@@ -595,9 +595,12 @@ namespace SlskTransferStatsUI
             Application.DoEvents();
         }
 
+        //LoadTree
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
             string input;
+            List<Person> users = new List<Person>();
+            List<Folder> folders = new List<Folder>();
 
             //Clear nodes so their are no dupes
             treeView1.Invoke(new Action(() => {
@@ -605,11 +608,9 @@ namespace SlskTransferStatsUI
             }));
 
             //Load data files (dont parse if they dont exist)
-            if (File.Exists(Globals.UserDataFile + "\\fileData.txt"))
+            if (Globals.folders.Count > 0)
             {
-                input = File.ReadAllText(@Globals.UserDataFile + "\\fileData.txt");
-                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
-
+                folders = Globals.folders;
                 Globals.topFolders = new List<string>();
 
                 //folder stats
@@ -665,23 +666,11 @@ namespace SlskTransferStatsUI
                 {
                     listView1.Columns[0].Width = listView1.Width - listView1.Columns[1].Width - SystemInformation.VerticalScrollBarWidth - 4;
                 }));
-
-                folders = JsonConvert.DeserializeObject<List<Folder>>(input);
             }
 
-            if (File.Exists(Globals.UserDataFile + "\\userData.txt"))
+            if (Globals.users.Count > 0)
             {
-                input = System.IO.File.ReadAllText(Globals.UserDataFile + "\\userData.txt");
-                users = JsonConvert.DeserializeObject<List<Person>>(input);
-
-                //for(int i = 0; i < users.Count; i++)
-                //{
-                //    SqliteDataAccess.SaveUser(users[i]);
-                //}
-
-                //users = SqliteDataAccess.LoadUsers();
-
-                //Top users stat
+                users = Globals.users;
                 users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
 
                 richTextBox4.Invoke(new Action(() => {
@@ -723,8 +712,8 @@ namespace SlskTransferStatsUI
                         userDownload = Decimal.Divide(userDownload, 1000000);
                         row = new string[] { users[i].Username, (userDownload).ToString("#.###") + " GB"};
                     }
-                    ListViewItem item = new ListViewItem(row);
 
+                    ListViewItem item = new ListViewItem(row);
                     listView2.Invoke(new Action(() => {
                         listView2.Items.Add(item);
                     }));
@@ -739,9 +728,8 @@ namespace SlskTransferStatsUI
                 users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
                 string lastuser = "Last user to download: " + users[users.Count - 1].Username;
 
-                //last user to download stat
-                string lastDate = users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date
-                                                        .Substring(1, users[users.Count - 1].DownloadList[users[users.Count - 1].DownloadList.Count - 1].Date.Length - 2);
+                List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(users[users.Count - 1].Username);
+                string lastDate = userDownloads[userDownloads.Count - 1].Date.Substring(1, userDownloads[userDownloads.Count - 1].Date.Length - 2);
 
                 string[] dateSplit = lastDate.Split();
                 lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
@@ -893,14 +881,16 @@ namespace SlskTransferStatsUI
         {
             while (StartNode != null)
             {
-                Person user = users.Find(i => i.Username == StartNode.Text);
+                Person user = Globals.users.Find(i => i.Username == StartNode.Text);
 
                 if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
                 {
                     CurrentNodeMatches.Add(StartNode);
                 }
 
-                foreach (Download download in user.DownloadList)
+                List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(user.Username);
+
+                foreach (Download download in userDownloads)
                 {
                     if (download.Filename.ToLower().Contains(SearchText.ToLower()))
                     {
@@ -933,31 +923,31 @@ namespace SlskTransferStatsUI
             textBox4.Text = "";
 
             //Check if a user is selected
-            for (int i = 0; i < users.Count; i++)
+            for (int i = 0; i < Globals.users.Count; i++)
             {
                 //Find what user is selected
-                if (users[i].Username == selectedNodeText)
+                if (Globals.users[i].Username == selectedNodeText)
                 {
                     //Format data (yes i do this a lot when i actually store the dates like this it breaks)
-                    string lastDate = users[i].LastDate.Substring(1, users[i].LastDate.Length - 2);
+                    string lastDate = Globals.users[i].LastDate.Substring(1, Globals.users[i].LastDate.Length - 2);
                     string[] dateSplit = lastDate.Split();
                     lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
 
                     //Determine if download size is in KB, mb or GB
 
                     string downloadString = "";
-                    decimal totalDlDecimal = Convert.ToDecimal(users[i].TotalDownloadSize);
+                    decimal totalDlDecimal = Convert.ToDecimal(Globals.users[i].TotalDownloadSize);
 
-                    if (users[i].TotalDownloadSize < 1000)
+                    if (Globals.users[i].TotalDownloadSize < 1000)
                     {
                         downloadString = totalDlDecimal.ToString("#.###") + " KB";
                     }
-                    if(users[i].TotalDownloadSize > 1000 && users[i].TotalDownloadSize < 1000000)
+                    if(Globals.users[i].TotalDownloadSize > 1000 && Globals.users[i].TotalDownloadSize < 1000000)
                     {
                         totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
                         downloadString = totalDlDecimal.ToString("#.###") + " MB";
                     }
-                    if (users[i].TotalDownloadSize > 1000000)
+                    if (Globals.users[i].TotalDownloadSize > 1000000)
                     {
                         totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
                         downloadString = totalDlDecimal.ToString("#.###") + " GB";
@@ -965,7 +955,7 @@ namespace SlskTransferStatsUI
 
                     //Update text
                     label5.Text = "User Information";
-                    textBox4.AppendText("Username: " + users[i].Username + "\r\n\r\nNumber of downloads by user: " + users[i].DownloadNum +
+                    textBox4.AppendText("Username: " + Globals.users[i].Username + "\r\n\r\nNumber of downloads by user: " + Globals.users[i].DownloadNum +
                                         "\r\n\r\nLast download: " + lastDate + "\r\n\r\nTotal download size: " + downloadString);
                    
                     userFolder = true;
@@ -974,15 +964,15 @@ namespace SlskTransferStatsUI
             }
 
             //Same as user for loop but for folders
-            for (int i = 0; i < folders.Count; i++)
+            for (int i = 0; i < Globals.folders.Count; i++)
             {
-                if (folders[i].Path == selectedNodeText)
+                if (Globals.folders[i].Path == selectedNodeText)
                 {
 
                     label5.Text = "Folder Information";
-                    textBox4.AppendText("Folder name: " + folders[i].Foldername + "\r\n\r\nTimes downloaded from: " + folders[i].DownloadNum +
-                                        "\r\n\r\nLast user to download: " + folders[i].LatestUser + "\r\n\r\nLast date downloaded: " + 
-                                        folders[i].LastTimeDownloaded +  "\r\n\r\nFull path: " + folders[i].Path);
+                    textBox4.AppendText("Folder name: " + Globals.folders[i].Foldername + "\r\n\r\nTimes downloaded from: " + Globals.folders[i].DownloadNum +
+                                        "\r\n\r\nLast user to download: " + Globals.folders[i].LatestUser + "\r\n\r\nLast date downloaded: " +
+                                        Globals.folders[i].LastTimeDownloaded +  "\r\n\r\nFull path: " + Globals.folders[i].Path);
                     
                     userFolder = true;
                     break;
@@ -1000,45 +990,46 @@ namespace SlskTransferStatsUI
                 }
 
                 string user = node.Text;
-                int index = users.FindIndex(person => person.Username == user);
+                int index = Globals.users.FindIndex(person => person.Username == user);
+                List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(Globals.users[index].Username);
 
-                for (int i = 0; i < users[index].DownloadList.Count; i++)
+                for (int i = 0; i < userDownloads.Count; i++)
                 {
-                    if (users[index].DownloadList[i].Filename == selectedNodeText)
+                    if (userDownloads[i].Filename == selectedNodeText)
                     {
                         //Determine if download size is in KB, mb or GB
 
                         string downloadString = "";
-                        decimal totalDlDecimal = Convert.ToDecimal(users[index].DownloadList[i].Size);
+                        decimal totalDlDecimal = Convert.ToDecimal(userDownloads[i].Size);
 
-                        if (users[index].DownloadList[i].Size < 1000)
+                        if (userDownloads[i].Size < 1000)
                         {
                             downloadString = totalDlDecimal.ToString("#.###") + " KB";
                         }
-                        if (users[index].DownloadList[i].Size > 1000 && users[index].DownloadList[i].Size < 1000000)
+                        if (userDownloads[i].Size > 1000 && userDownloads[i].Size < 1000000)
                         {
                             totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000);
                             downloadString = totalDlDecimal.ToString("#.###") + " MB";
                         }
-                        if (users[index].DownloadList[i].Size > 1000000)
+                        if (userDownloads[i].Size > 1000000)
                         {
                             totalDlDecimal = Decimal.Divide(totalDlDecimal, 1000000);
                             downloadString = totalDlDecimal.ToString("#.###") + " GB";
                         }
 
                         //the classic date re arange that could be a function 
-                        string lastDate = users[index].DownloadList[i].Date.Substring(1, users[i].LastDate.Length - 2);
+                        string lastDate = userDownloads[i].Date.Substring(1, Globals.users[i].LastDate.Length - 2);
                         string[] dateSplit = lastDate.Split();
                         lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
 
-                        int downloadCount = getSongDownloadNum(users[index].DownloadList[i].Filename);
+                        int downloadCount = SqliteDataAccess.CountDownload(userDownloads[i].Path);
 
                         label5.Text = "File Information";
-                        textBox4.AppendText("Filename: " + users[index].DownloadList[i].Filename + 
+                        textBox4.AppendText("Filename: " + userDownloads[i].Filename + 
                                             "\r\n\r\nFile size: " + downloadString +
                                             "\r\n\r\nNumber of times downloaded: " + downloadCount +
                                             "\r\n\r\nDate downloaded: " + lastDate.Replace("]", "") +
-                                            "\r\n\r\nFile path: " + users[index].DownloadList[i].Path);
+                                            "\r\n\r\nFile path: " + userDownloads[i].Path);
                         break;
                     }
                 }
@@ -1230,18 +1221,18 @@ namespace SlskTransferStatsUI
                     node = node.Parent;
                 }
 
-                int index = users.FindIndex(person => person.Username == node.Text);
+                int index = Globals.users.FindIndex(person => person.Username == node.Text);
 
                 //if the selection is a folder
-                for (int i = 0; i < folders.Count; i++)
+                for (int i = 0; i < Globals.folders.Count; i++)
                 {
-                    if (folders[i].Path == selectedNodeText)
+                    if (Globals.folders[i].Path == selectedNodeText)
                     {                                               
                         List<int> toRemove = new List<int>();
 
-                        for(int j = 0; j < users[index].DownloadList.Count; j++)
+                        for(int j = 0; j < Globals.users[index].DownloadList.Count; j++)
                         {
-                            string newPath = users[index].DownloadList[j].Path.Substring(0, users[index].DownloadList[j].Path.LastIndexOf("\\"));
+                            string newPath = Globals.users[index].DownloadList[j].Path.Substring(0, Globals.users[index].DownloadList[j].Path.LastIndexOf("\\"));
 
                             if (newPath == selectedNodeText)
                             {                               
@@ -1255,13 +1246,13 @@ namespace SlskTransferStatsUI
                             {
                                 int removeIndex = toRemove[k] - k;
 
-                                if (users[index].DownloadList.Count > 1)
+                                if (Globals.users[index].DownloadList.Count > 1)
                                 {
-                                    users[index].DownloadList.RemoveAt(removeIndex);
-                                    users[index].DownloadNum -= 1;
+                                    Globals.users[index].DownloadList.RemoveAt(removeIndex);
+                                    Globals.users[index].DownloadNum -= 1;
                                 }
 
-                                else if(users[index].DownloadList.Count == 1){
+                                else if(Globals.users[index].DownloadList.Count == 1){
                                     //Changing selected node text to fully remove user when they only have one more download to remove
                                     selectedNodeText = node.Text;
                                     break;
@@ -1275,7 +1266,7 @@ namespace SlskTransferStatsUI
                             {
                                 File.Delete("parsingData.txt");
                             }
-                            string output = JsonConvert.SerializeObject(users, Formatting.Indented);
+                            string output = JsonConvert.SerializeObject(Globals.users, Formatting.Indented);
                             System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                             ParseData();
@@ -1290,16 +1281,16 @@ namespace SlskTransferStatsUI
                     }
                 }
 
-                for (int j = 0; j < users[index].DownloadList.Count; j++)
+                for (int j = 0; j < Globals.users[index].DownloadList.Count; j++)
                 {
-                    string newPath = users[index].DownloadList[j].Path.Substring(0, users[index].DownloadList[j].Path.LastIndexOf("\\"));
+                    string newPath = Globals.users[index].DownloadList[j].Path.Substring(0, Globals.users[index].DownloadList[j].Path.LastIndexOf("\\"));
 
-                    if (users[index].DownloadList[j].Filename == selectedNodeText && users[index].DownloadList.Count > 1)
+                    if (Globals.users[index].DownloadList[j].Filename == selectedNodeText && Globals.users[index].DownloadList.Count > 1)
                     {
-                        users[index].DownloadList.RemoveAt(j);
-                        users[index].DownloadNum -= 1;
+                        Globals.users[index].DownloadList.RemoveAt(j);
+                        Globals.users[index].DownloadNum -= 1;
 
-                        string output = JsonConvert.SerializeObject(users, Formatting.Indented);
+                        string output = JsonConvert.SerializeObject(Globals.users, Formatting.Indented);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                         if (File.Exists("settings.ini"))
@@ -1318,7 +1309,7 @@ namespace SlskTransferStatsUI
                         }
                         break;
                     }
-                    else if (users[index].DownloadList.Count == 1)
+                    else if (Globals.users[index].DownloadList.Count == 1)
                     {
                         //Changing selected node text to fully remove user when they only have one more download to remove
                         selectedNodeText = node.Text;
@@ -1328,12 +1319,12 @@ namespace SlskTransferStatsUI
                 }
 
                 //if section is a user completly remove the user
-                for (int i = 0; i < users.Count; i++)
+                for (int i = 0; i < Globals.users.Count; i++)
                 {
-                    if (selectedNodeText == users[i].Username)
+                    if (selectedNodeText == Globals.users[i].Username)
                     {
-                        users.RemoveAt(i);
-                        string output = JsonConvert.SerializeObject(users, Formatting.Indented);
+                        Globals.users.RemoveAt(i);
+                        string output = JsonConvert.SerializeObject(Globals.users, Formatting.Indented);
                         System.IO.File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
                         if (File.Exists("settings.ini"))
@@ -1356,29 +1347,6 @@ namespace SlskTransferStatsUI
             }
         }
 
-        private int getSongDownloadNum(string songName)
-        {
-            List<string> allDownloads = new List<string>();
-            int count = 0;
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                for (int j = 0; j < users[i].DownloadList.Count; j++)
-                {
-                    allDownloads.Add(users[i].DownloadList[j].Filename);
-                }
-            }
-
-            for(int i = 0; i < allDownloads.Count; i++)
-            {
-                if(songName.ToLower() == allDownloads[i].ToLower())
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
         //Detect enter key for searching
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1398,12 +1366,12 @@ namespace SlskTransferStatsUI
         //Function to scrable names in the tree. useful for taking screenshots
         public void ScrambleNames()
         {
-            for (int i = 0; i < users.Count; i++)
+            for (int i = 0; i < Globals.users.Count; i++)
             {
-                users[i].Username = new string((users[i].Username).ToCharArray().OrderBy(x => Guid.NewGuid()).ToArray());
+                Globals.users[i].Username = new string((Globals.users[i].Username).ToCharArray().OrderBy(x => Guid.NewGuid()).ToArray());
             }
             
-            string output = JsonConvert.SerializeObject(users, Formatting.Indented);
+            string output = JsonConvert.SerializeObject(Globals.users, Formatting.Indented);
             File.WriteAllText(@Globals.UserDataFile + "\\userData.txt", output);
 
         }
@@ -1539,12 +1507,14 @@ namespace SlskTransferStatsUI
     //Global variables
     public static class Globals
     {
+        public static List<Person> users = new List<Person>();
+        public static List<Folder> folders = new List<Folder>();
+
         public static bool initSettings;
         public static bool loading;
-        public static String UserDataFile;
+        public static string UserDataFile;
         public static List<string> SlskFolders = new List<string>();
         public static List<string> topFolders = new List<string>();
-
         public static Stopwatch stopwatch;
     }
 
@@ -1595,12 +1565,22 @@ namespace SlskTransferStatsUI
 
     public class Download
     {
-        public int Id { get; set; }
+        public Int64 Id { get; set; }
         public string Username { get; set; }
         public string Filename { get; set; }
         public string Path { get; set; }
         public double Size { get; set; }
         public string Date { get; set; }
+
+        public Download(Int64 id, string username, string filename, string path, double size, string date)
+        {
+            Id = id;
+            Username = username;
+            Filename = filename;
+            Path = path;
+            Size = size;
+            Date = date;
+        }
 
         public Download(string username, string filename, string path, double size, string date)
         {

@@ -45,8 +45,17 @@ namespace SlskTransferStatsUI
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<Download>("select * from Download where Username = " + username, new DynamicParameters());
+                var output = cnn.Query<Download>("select * from Download where Username = '" + username.Replace("'", "''") + "'", new DynamicParameters());
                 return output.ToList();
+            }
+        }
+
+        public static int CountDownload(String path)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                int count = cnn.ExecuteScalar<int>("select count(*) from Download where lower(Path)='" + path.Replace("'", "''").ToLower() + "'");
+                return count;
             }
         }
 
