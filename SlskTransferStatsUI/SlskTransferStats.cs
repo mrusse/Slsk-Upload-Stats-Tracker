@@ -7,6 +7,8 @@ using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace SlskTransferStatsUI
 {
@@ -846,7 +848,7 @@ namespace SlskTransferStatsUI
                 CurrentNodeMatches.Clear();
                 LastSearchText = searchText;
                 LastNodeIndex = 0;
-                SearchNodes(searchText, treeView1.Nodes[0]);
+                SearchNodes(searchText);
                 label15.Text = (LastNodeIndex+1) + "/" +CurrentNodeMatches.Count + " results";
                 if(CurrentNodeMatches.Count > 1)
                 {
@@ -877,41 +879,42 @@ namespace SlskTransferStatsUI
             }
         }
 
-        private void SearchNodes(string SearchText, TreeNode StartNode)
+        private void SearchNodes(string SearchText)
         {
-            while (StartNode != null)
+            //TODO: Need to sort tree before search so ID matches node position in tree
+            if(checkBox5.Checked == true)
             {
-                Person user = Globals.users.Find(i => i.Username == StartNode.Text);
+                List<Person> userResults = SqliteDataAccess.SearchUser(SearchText);
+                List<Download> fileResults = SqliteDataAccess.SearchDownload(SearchText);
 
-                if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
+                for (int i = 0; i < userResults.Count; i++)
                 {
-                    CurrentNodeMatches.Add(StartNode);
+                    int index = (int)userResults[i].Id;
+                    TreeNode match = treeView1.Nodes[treeView1.Nodes.Count - index];
+                    CurrentNodeMatches.Add(match);
                 }
 
-                List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(user.Username);
-
-                foreach (Download download in userDownloads)
+                for (int i = 0; i < fileResults.Count; i++)
                 {
-                    if (download.Filename.ToLower().Contains(SearchText.ToLower()))
+                    string username = fileResults[i].Username;
+                    Person user = SqliteDataAccess.GetUser(username);
+
+                    int index = (int)user.Id;
+                    TreeNode parent = treeView1.Nodes[treeView1.Nodes.Count - index];
+                    parent.Expand();
+
+                    for (int j = 0; j < parent.Nodes.Count; j++)
                     {
-                        StartNode.ExpandAll();
-                        foreach(TreeNode node in StartNode.Nodes)
+                        for (int k = 0; k < parent.Nodes[j].Nodes.Count; k++)
                         {
-                            if (download.Path.Remove(download.Path.LastIndexOf('\\')) == node.Text)
+                            TreeNode node = parent.Nodes[j].Nodes[k];
+                            if (node.Text == fileResults[i].Filename)
                             {
-                                foreach(TreeNode node2 in node.Nodes)
-                                {
-                                    if (node2.Text.ToLower().Contains(SearchText.ToLower()) && !CurrentNodeMatches.Contains(node2))
-                                    {
-                                        CurrentNodeMatches.Add(node2);
-                                    }
-                                }
+                                CurrentNodeMatches.Add(node);
                             }
                         }
                     }
                 }
-
-                StartNode = StartNode.NextNode;
             }
         }
 

@@ -32,6 +32,24 @@ namespace SlskTransferStatsUI
             }
         }
 
+        public static List<Person> SearchUser(string search)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Person>("select * from User where instr(lower(Username), '" + search.Replace("'", "''").ToLower() + "') > 0;", new DynamicParameters());
+                return output.ToList();
+            }
+        }
+
+        public static Person GetUser(string username)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Person>("select * from User where Username = '" + username.Replace("'", "''") + "'", new DynamicParameters());
+                return output.ToList()[0];
+            }
+        }
+
         public static List<Download> LoadDownloads()
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -41,7 +59,7 @@ namespace SlskTransferStatsUI
             }
         }
 
-        public static List<Download> LoadUserDownloads(String username)
+        public static List<Download> LoadUserDownloads(string username)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -50,7 +68,16 @@ namespace SlskTransferStatsUI
             }
         }
 
-        public static int CountDownload(String path)
+        public static List<Download> SearchDownload(string search)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Download>("select * from Download where instr(lower(Filename), '" + search.Replace("'", "''").ToLower() + "') > 0;", new DynamicParameters());
+                return output.ToList();
+            }
+        }
+
+        public static int CountDownload(string path)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -76,7 +103,7 @@ namespace SlskTransferStatsUI
             }
         }
 
-        public static Folder LoadFolder(String path)
+        public static Folder LoadFolder(string path)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -132,7 +159,6 @@ namespace SlskTransferStatsUI
                     string path = users[i].DownloadList[j].Path.Substring(0, users[i].DownloadList[j].Path.LastIndexOf("\\"));
                     string foldername = path.Substring(path.LastIndexOf("\\") + 1);
 
-                    //Change date format
                     string lastDate = users[i].DownloadList[j].Date.Substring(1, users[i].LastDate.Length - 2);
                     string[] dateSplit = lastDate.Split();
                     lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
