@@ -600,7 +600,6 @@ namespace SlskTransferStatsUI
         //LoadTree
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
-            string input;
             List<Person> users = new List<Person>();
             List<Folder> folders = new List<Folder>();
 
@@ -737,7 +736,6 @@ namespace SlskTransferStatsUI
                 lastDate = dateSplit[0] + ", " + dateSplit[2] + " " + dateSplit[1] + " " + dateSplit[4] + " " + dateSplit[3];
                 lastDate = "Last upload date: " + lastDate;
 
-                //Number of users stat
                 if (checkBox2.Checked == true)
                 {
                     users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
@@ -835,6 +833,18 @@ namespace SlskTransferStatsUI
             Search(searchText);
         }
 
+        private void button3_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                textBox3.Text = "";
+                label15.Text = "";
+                LastSearchText = "";
+                button3.Text = "Search";
+                treeView1.Nodes[0].EnsureVisible();
+            }
+        }
+
         private void Search(string searchText)
         {
             if (String.IsNullOrEmpty(searchText))
@@ -876,42 +886,44 @@ namespace SlskTransferStatsUI
                 label15.Text = "";
                 LastSearchText = "";
                 button3.Text = "Search";
+                treeView1.Nodes[0].EnsureVisible();
             }
         }
 
         private void SearchNodes(string SearchText)
         {
-            //TODO: Need to sort tree before search so ID matches node position in tree
-            if(checkBox5.Checked == true)
+            if(!checkBox5.Checked)
             {
-                List<Person> userResults = SqliteDataAccess.SearchUser(SearchText);
-                List<Download> fileResults = SqliteDataAccess.SearchDownload(SearchText);
+                checkBox5.Checked = true;
+            }
 
-                for (int i = 0; i < userResults.Count; i++)
+            List<Person> userResults = SqliteDataAccess.SearchUser(SearchText);
+            List<Download> fileResults = SqliteDataAccess.SearchDownload(SearchText);
+
+            for (int i = 0; i < userResults.Count; i++)
+            {
+                int index = (int)userResults[i].Id;
+                TreeNode match = treeView1.Nodes[treeView1.Nodes.Count - index];
+                CurrentNodeMatches.Add(match);
+            }
+
+            for (int i = 0; i < fileResults.Count; i++)
+            {
+                string username = fileResults[i].Username;
+                Person user = SqliteDataAccess.GetUser(username);
+
+                int index = (int)user.Id;
+                TreeNode parent = treeView1.Nodes[treeView1.Nodes.Count - index];
+                parent.Expand();
+
+                for (int j = 0; j < parent.Nodes.Count; j++)
                 {
-                    int index = (int)userResults[i].Id;
-                    TreeNode match = treeView1.Nodes[treeView1.Nodes.Count - index];
-                    CurrentNodeMatches.Add(match);
-                }
-
-                for (int i = 0; i < fileResults.Count; i++)
-                {
-                    string username = fileResults[i].Username;
-                    Person user = SqliteDataAccess.GetUser(username);
-
-                    int index = (int)user.Id;
-                    TreeNode parent = treeView1.Nodes[treeView1.Nodes.Count - index];
-                    parent.Expand();
-
-                    for (int j = 0; j < parent.Nodes.Count; j++)
+                    for (int k = 0; k < parent.Nodes[j].Nodes.Count; k++)
                     {
-                        for (int k = 0; k < parent.Nodes[j].Nodes.Count; k++)
+                        TreeNode node = parent.Nodes[j].Nodes[k];
+                        if (node.Text == fileResults[i].Filename)
                         {
-                            TreeNode node = parent.Nodes[j].Nodes[k];
-                            if (node.Text == fileResults[i].Filename)
-                            {
-                                CurrentNodeMatches.Add(node);
-                            }
+                            CurrentNodeMatches.Add(node);
                         }
                     }
                 }
@@ -1141,7 +1153,7 @@ namespace SlskTransferStatsUI
                 checkBox5.Checked = false;
                 checkBox4.Checked = false;
 
-                LoadTree();
+                SortTree();
 
                 if (checkBox1.Checked == true)
                 {
@@ -1160,7 +1172,7 @@ namespace SlskTransferStatsUI
                 checkBox5.Checked = false;
                 checkBox4.Checked = false;
 
-                LoadTree();
+                SortTree();
 
                 if (checkBox1.Checked == true)
                 {
@@ -1179,7 +1191,7 @@ namespace SlskTransferStatsUI
                 checkBox4.Checked = false;
                 checkBox3.Checked = false;
 
-                LoadTree();
+                SortTree();
 
                 if (checkBox1.Checked == true)
                 {
@@ -1198,7 +1210,7 @@ namespace SlskTransferStatsUI
                 checkBox5.Checked = false;
                 checkBox2.Checked = false;
 
-                LoadTree();
+                SortTree();
 
                 if (checkBox1.Checked == true)
                 {
@@ -1207,6 +1219,42 @@ namespace SlskTransferStatsUI
                     treeView1.Nodes[0].EnsureVisible();
                 }
             }
+        }
+
+        private void SortTree()
+        {
+            Application.DoEvents();
+            treeView1.BeginUpdate();
+            treeView1.Nodes.Clear();
+
+            List<Person> users = Globals.users;
+
+            if (checkBox2.Checked == true)
+            {
+                users.Sort((x, y) => y.TotalDownloadSize.CompareTo(x.TotalDownloadSize));
+            }
+
+            if (checkBox3.Checked == true)
+            {
+                users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
+            }
+
+            if (checkBox4.Checked == true)
+            {
+                users.Sort((x, y) => x.Username.CompareTo(y.Username));
+            }
+
+            if (checkBox5.Checked == true)
+            {
+                users.Sort((x, y) => DateTime.Compare(y.convertDate(y.LastDate), x.convertDate(x.LastDate)));
+            }
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                treeView1.Nodes.Add(users[i].Username);
+                treeView1.Nodes[i].Nodes.Add("");
+            }
+            treeView1.EndUpdate();
         }
 
         //remove selected button
