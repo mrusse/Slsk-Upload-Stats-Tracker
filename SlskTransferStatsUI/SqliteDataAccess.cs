@@ -107,7 +107,7 @@ namespace SlskTransferStatsUI
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<Folder>("select * from Folder where PathToLower='" + path.Replace("'", "''") + "'", new DynamicParameters());
+                var output = cnn.Query<Folder>("select * from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'", new DynamicParameters());
                 return output.ToList()[0];
             }
         }
@@ -116,7 +116,7 @@ namespace SlskTransferStatsUI
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                int count = cnn.ExecuteScalar<int>("select count(*) from Folder where PathToLower='" + path.Replace("'", "''") + "'");
+                int count = cnn.ExecuteScalar<int>("select count(*) from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'");
                 return count;
             }
         }
@@ -166,7 +166,7 @@ namespace SlskTransferStatsUI
                     int count = dbcon.ExecuteScalar<int>("select count(*) from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'");
                     if (count == 0)
                     {
-                        Folder folder = new Folder(path, path.ToLower(), foldername, 1, users[i].Username, lastDate);
+                        Folder folder = new Folder(users[i].Username, foldername, path, path.ToLower(), 1, lastDate);
                         dbcon.Execute("insert into Folder (Path, PathToLower, Foldername, DownloadNum, LatestUser, LastTimeDownloaded) values (@Path, @PathToLower, @Foldername, @DownloadNum, @LatestUser, @LastTimeDownloaded)", folder);
                     }
                     else
