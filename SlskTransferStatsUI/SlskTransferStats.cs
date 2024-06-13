@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Dapper;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
+using System.Data.SQLite;
 
 namespace SlskTransferStatsUI
 {
@@ -220,6 +221,8 @@ namespace SlskTransferStatsUI
             users = Globals.users;
             users.Sort((x, y) => DateTime.Compare(x.convertDate(x.LastDate), y.convertDate(y.LastDate)));
 
+            SQLiteConnection dbcon = SqliteDataAccess.OpenConnection();
+
             string drive = "";
             string str = sr.ReadLine();
             string queued;
@@ -311,8 +314,8 @@ namespace SlskTransferStatsUI
                             Person user = new Person(username, 1, size, date);
                             Download download = new Download(username, filename, path, size, date);
 
-                            SqliteDataAccess.SaveDownload(download);
-                            SqliteDataAccess.SaveUser(user);
+                            SqliteDataAccess.SaveDownload(dbcon, download);
+                            SqliteDataAccess.SaveUser(dbcon, user);
 
                             string folderPath = path.Substring(0, path.LastIndexOf("\\"));
                             string folderName = folderPath.Substring(folderPath.LastIndexOf("\\") + 1);
@@ -321,7 +324,7 @@ namespace SlskTransferStatsUI
                             string[] folderDateSplit = folderDate.Split();
                             folderDate = folderDateSplit[0] + ", " + folderDateSplit[2] + " " + folderDateSplit[1] + " " + folderDateSplit[4] + " " + folderDateSplit[3];
 
-                            AddFolder(folderPath, username, folderName, folderDate);
+                            AddFolder(dbcon, folderPath, username, folderName, folderDate);
 
                             users.Add(user);
                             oldUserList.Add(username);
@@ -359,7 +362,7 @@ namespace SlskTransferStatsUI
                             date = queued.Substring(0, queued.IndexOf("]") + 1);
                             added = false;
 
-                            List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(username);
+                            List<Download> userDownloads = SqliteDataAccess.LoadUserDownloads(dbcon, username);
 
                             //check if file is already in their downloads
                             for (int i = 0; i < userDownloads.Count; i++)
@@ -377,8 +380,8 @@ namespace SlskTransferStatsUI
                                 Person user = new Person(username, (int)users[index].DownloadNum + 1, users[index].TotalDownloadSize += size, userDownloads[userDownloads.Count - 1].Date);
                                 Download download = new Download(username, filename, path, size, date);
 
-                                SqliteDataAccess.SaveDownload(download);
-                                SqliteDataAccess.SaveUser(user);
+                                SqliteDataAccess.SaveDownload(dbcon, download);
+                                SqliteDataAccess.UpdateUser(dbcon, user);
 
                                 users[index] = user;
 
@@ -389,7 +392,7 @@ namespace SlskTransferStatsUI
                                 string[] folderDateSplit = folderDate.Split();
                                 folderDate = folderDateSplit[0] + ", " + folderDateSplit[2] + " " + folderDateSplit[1] + " " + folderDateSplit[4] + " " + folderDateSplit[3];
 
-                                AddFolder(folderPath, username, folderName, folderDate);
+                                AddFolder(dbcon, folderPath, username, folderName, folderDate);
 
                                 totalSize += size;
 
@@ -481,6 +484,7 @@ namespace SlskTransferStatsUI
 
             sr.Close();
             fs.Close();
+            SqliteDataAccess.CloseConnection(dbcon);
 
             //retuirn info for output box
             String[] textBoxReturn = { info.Rtf, stats.Rtf };
@@ -506,25 +510,25 @@ namespace SlskTransferStatsUI
             Application.DoEvents();
         }
 
-        private void AddFolder(string path, string username, string foldername, string lastDate)
+        private void AddFolder(SQLiteConnection dbcon, string path, string username, string foldername, string lastDate)
         {
-            int count = SqliteDataAccess.CheckFolder(path);
+            int count = SqliteDataAccess.CheckFolder(dbcon, path);
 
             if (count == 0)
             {
                 Folder folder = new Folder(username, foldername, path, path.ToLower(), 1, lastDate);
-                SqliteDataAccess.SaveFolder(folder);
+                SqliteDataAccess.SaveFolder(dbcon, folder);
             }
             else
             {
-                Folder folder = SqliteDataAccess.LoadFolder(path);
+                Folder folder = SqliteDataAccess.LoadFolder(dbcon, path);
                 if (folder.LatestUser != username)
                 {
                     folder.LatestUser = username;
                     folder.DownloadNum = folder.DownloadNum += 1;
                     folder.LastTimeDownloaded = lastDate;
 
-                    SqliteDataAccess.UpdateFolder(folder);
+                    SqliteDataAccess.UpdateFolder(dbcon, folder);
                 }
             }
 
@@ -819,7 +823,7 @@ namespace SlskTransferStatsUI
                 label15.Text = "";
                 LastSearchText = "";
                 button3.Text = "Search";
-                treeView1.Nodes[0].EnsureVisible();
+                //treeView1.Nodes[0].EnsureVisible();
             }
         }
 
@@ -835,6 +839,7 @@ namespace SlskTransferStatsUI
 
             for (int i = 0; i < userResults.Count; i++)
             {
+                Console.WriteLine(userResults[i].Username);
                 int index = (int)userResults[i].Id;
                 TreeNode match = treeView1.Nodes[treeView1.Nodes.Count - index];
                 CurrentNodeMatches.Add(match);
@@ -1474,6 +1479,7 @@ namespace SlskTransferStatsUI
                 string selected = listView2.SelectedItems[0].Text;
                 tabControl1.SelectedIndex = 1;
                 Application.DoEvents();
+                Console.WriteLine(selected);
                 Search(selected);
             }
             catch (Exception ex)

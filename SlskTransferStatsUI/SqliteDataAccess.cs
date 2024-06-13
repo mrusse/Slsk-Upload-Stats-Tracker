@@ -32,6 +32,14 @@ namespace SlskTransferStatsUI
             }
         }
 
+        public static void UpdateUser(Person user)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                cnn.Execute("update User set DownloadNum = @DownloadNum, TotalDownloadSize = @TotalDownloadSize, LastDate = @LastDate where Username = @Username", user);
+            }
+        }
+
         public static List<Person> SearchUser(string search)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -135,6 +143,69 @@ namespace SlskTransferStatsUI
             {
                 cnn.Execute("update Folder set DownloadNum = @DownloadNum, LatestUser = @LatestUser, LastTimeDownloaded = @LastTimeDownloaded where Path = @Path", folder);
             }
+        }
+
+        public static SQLiteConnection OpenConnection()
+        {
+            string connectionString = LoadConnectionString();
+            SQLiteConnection dbcon = new SQLiteConnection(connectionString);
+            dbcon.Open();
+
+            SQLiteCommand sqlComm;
+            sqlComm = new SQLiteCommand("begin", dbcon);
+            sqlComm.ExecuteNonQuery();
+
+            return dbcon;
+        }
+
+        public static void CloseConnection(SQLiteConnection dbcon)
+        {
+            SQLiteCommand sqlComm = new SQLiteCommand("end", dbcon);
+            sqlComm.ExecuteNonQuery();
+            dbcon.Close();
+        }
+
+        public static void SaveUser(SQLiteConnection dbcon, Person user)
+        {
+            dbcon.Execute("insert into User (Username, DownloadNum, TotalDownloadSize, LastDate) values (@Username, @DownloadNum, @TotalDownloadSize, @LastDate)", user);
+        }
+
+        public static void UpdateUser(SQLiteConnection dbcon, Person user)
+        {
+            dbcon.Execute("update User set DownloadNum = @DownloadNum, TotalDownloadSize = @TotalDownloadSize, LastDate = @LastDate where Username = @Username", user);
+        }
+
+        public static List<Download> LoadUserDownloads(SQLiteConnection dbcon, string username)
+        {
+
+            var output = dbcon.Query<Download>("select * from Download where Username = '" + username.Replace("'", "''") + "'", new DynamicParameters());
+            return output.ToList();
+        }
+
+        public static void SaveDownload(SQLiteConnection dbcon, Download download)
+        {
+            dbcon.Execute("insert into Download (Username, Filename, Path, Size, Date) values (@Username, @Filename, @Path, @Size, @Date)", download);
+        }
+
+        public static void SaveFolder(SQLiteConnection dbcon, Folder folder)
+        {
+            dbcon.Execute("insert into Folder (Path, PathToLower, Foldername, DownloadNum, LatestUser, LastTimeDownloaded) values (@Path, @PathToLower, @Foldername, @DownloadNum, @LatestUser, @LastTimeDownloaded)", folder);
+        }
+
+        public static Folder LoadFolder(SQLiteConnection dbcon, string path)
+        {
+            var output = dbcon.Query<Folder>("select * from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'", new DynamicParameters());
+            return output.ToList()[0];
+        }
+        public static void UpdateFolder(SQLiteConnection dbcon, Folder folder)
+        {
+            dbcon.Execute("update Folder set DownloadNum = @DownloadNum, LatestUser = @LatestUser, LastTimeDownloaded = @LastTimeDownloaded where Path = @Path", folder);
+        }
+
+        public static int CheckFolder(SQLiteConnection dbcon, String path)
+        {
+            int count = dbcon.ExecuteScalar<int>("select count(*) from Folder where PathToLower='" + path.ToLower().Replace("'", "''") + "'");
+            return count;
         }
 
         public static void ConvertLegacyDatabase(List<Person> users)
